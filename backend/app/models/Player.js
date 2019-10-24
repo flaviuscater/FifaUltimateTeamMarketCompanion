@@ -4,14 +4,15 @@ const Positions = Object.freeze({"GK": String, "LB": String, "RB": String, "CM":
     "LW": String,"RW": String, "ST": String});
 
 const PlayerSchema = new mongoose.Schema({
+    futbinId: String,
+    name: String,
     imagePath: String,
     club: String,
     nationality: String,
     league: String,
     rating: Number,
     position: String,
-    version: String,
-    psPrice: String
+    version: String
 }, {
     timestamps: true
     }
