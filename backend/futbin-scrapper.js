@@ -29,6 +29,7 @@ function fetchAllFutPlayers() {
                     player.rating = $(this).find('.form.rating.ut20').text();
                     player.position = $(this).find('td').first().next().next().text().replace(/\s*$/,"");
                     //player.psPrice = $(this).find('.ps4_color.font-weight-bold').text();
+                    player.version = $(this).find('.mobile-hide-table-col').text();
 
                     fifaPlayers.push(player);
                     player.save()
