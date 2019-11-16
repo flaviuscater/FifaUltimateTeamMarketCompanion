@@ -8,9 +8,8 @@ import {
 
 import futPlayersService from '../app/service/FifaGraphQLService';
 import {Header} from "react-native-elements";
-import TransferTargetsComponent from "../app/components/TransferTargetsComponent";
 import FutPlayerCardComponent from "../app/components/FutCardComponent/FutPlayerCardComponent";
-import FlatListDemo from "../app/components/FlatListDemo";
+import TransferTargetsComponent from "../app/components/TransferTargetsComponent/TransferTargetsComponent";
 
 export default function HomeScreen() {
     return (
@@ -20,7 +19,7 @@ export default function HomeScreen() {
                 centerComponent={{ text: 'Transfer Targets', style: { color: '#fff' } }}
                 rightComponent={{ icon: 'home', color: '#fff' }}
             />
-        <FlatListDemo/>
+        <TransferTargetsComponent/>
         </View>
     );
 }

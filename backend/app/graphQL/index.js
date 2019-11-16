@@ -6,7 +6,7 @@ const Player = require('../models/Player');
 
 const typeDefs = gql`
     type Player {
-        futbinId: ID!,
+        _id: ID!,
         name: String,
         imagePath: String,
         club: String,
@@ -18,10 +18,10 @@ const typeDefs = gql`
     }
     type Query {
         getPlayers: [Player]
-        getPlayer(name: String!, rating: Int): Player
+        getPlayer(name: String!, version: String!): Player
     }
     type Mutation {
-        addPlayer(futbinId: ID!,
+        addPlayer(_id: ID!,
             name: String,
             imagePath: String!,
             club: String!,
@@ -37,7 +37,7 @@ const resolvers = {
     Query: {
         getPlayer: async (parent, args) => {
             return new Promise((resolve, reject) => {
-               Player.findOne({name: args.name, rating: args.rating}, (err, player) => {
+               Player.findOne({name: args.name, version: args.version}, (err, player) => {
                    if (err) {
                        reject(err);
                    } else {
