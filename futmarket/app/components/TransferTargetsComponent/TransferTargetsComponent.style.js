@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
     },
 
     textInputStyle: {
-
         textAlign: 'center',
         height: 40,
         width: '90%',
@@ -28,7 +27,6 @@ const styles = StyleSheet.create({
     },
 
     button: {
-
         width: '90%',
         height: 40,
         padding: 10,
@@ -41,6 +39,15 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
     },
+
+    consolePicker: {
+        //position: 'absolute',
+        alignSelf: 'flex-end',
+        // right: 5,
+        // top: 5,
+        height: 50,
+        width: 100
+    }
 
 });
 
