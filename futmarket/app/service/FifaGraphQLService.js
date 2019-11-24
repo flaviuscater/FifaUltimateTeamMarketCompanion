@@ -7,11 +7,13 @@ import gql from "graphql-tag";
 let uri = 'http://192.168.1.250:4000/graphql';
 
 const query = gql`
-query getPlayer($name: String!, $rating: Int) {
-  getPlayer(name: $name, rating: $rating) {
+query getPlayer($name: String!, $version: String!) {
+  getPlayer(name: $name, version: $version) {
     name,
     rating,
-    imagePath
+    imagePath,
+    _id,
+    version
   }
 }`;
 
