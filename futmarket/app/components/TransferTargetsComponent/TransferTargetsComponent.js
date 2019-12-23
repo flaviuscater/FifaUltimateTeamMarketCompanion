@@ -12,7 +12,7 @@ class TransferTargetsComponent extends Component {
 
         this.state = {
             loading: false,
-            fifaPlayers: [],
+            transferTargetPlayers: [],
             addPlayerNameText: "",
             page: 1,
             seed: 1,
@@ -42,6 +42,12 @@ class TransferTargetsComponent extends Component {
     };
 
     addFifaPlayer(name, version) {
+        // Add Player if not exist already
+        if (this.isPlayerPresent(this.state.transferTargetPlayers, name, version)) {
+            console.log("Player already exist:", name, version);
+            return;
+        }
+
         fifaGraphQLService.getFifaPlayer({name: name, version: version})
             .then(res => {
                 let fifaPlayer = res["data"]["getPlayer"];
@@ -54,17 +60,12 @@ class TransferTargetsComponent extends Component {
                        fifaPlayer.psPlayerPrice = data[futbinId]["prices"]["ps"]["LCPrice"];
                        fifaPlayer.xboxPlayerPrice = data[futbinId]["prices"]["xbox"]["LCPrice"];
                        fifaPlayer.pcPlayerPrice = data[futbinId]["prices"]["pc"]["LCPrice"];
-
-                        console.log(data[futbinId]["prices"]["xbox"]["LCPrice"]);
-                        console.log(data[futbinId]["prices"]["ps"]["LCPrice"]);
-                        console.log(data[futbinId]["prices"]["pc"]["LCPrice"]);
-
                     })
                     .catch(error => console.error(error));
 
                 if (res !== null && fifaPlayer !== null) {
                     this.setState({
-                        fifaPlayers: [...this.state.fifaPlayers, fifaPlayer],
+                        transferTargetPlayers: [...this.state.transferTargetPlayers, fifaPlayer],
                         error: res.error || null,
                         loading: false,
                         refreshing: false
@@ -78,8 +79,20 @@ class TransferTargetsComponent extends Component {
 
     }
 
+    isPlayerPresent(transferTargetPlayers, name, version) {
+        //this.state.transferTargetPlayers.forEach((player, idx) => {console.log("Present players: ", player, idx)});
+        let foundPlayer = this.state.transferTargetPlayers.find(fifaPlayer => fifaPlayer.name === name);
+
+        let playerExist = false;
+        if (foundPlayer !== null && foundPlayer !== undefined && foundPlayer.version === version) {
+            console.log("Found Player: ", foundPlayer);
+            playerExist = true;
+        }
+        return playerExist;
+    }
+
     getCurrentConsolePlayerPrice(futbinId) {
-        let currentPlayer = this.state.fifaPlayers.find((element) =>{
+        let currentPlayer = this.state.transferTargetPlayers.find((element) =>{
             return element['_id'] === futbinId;
         });
         if (this.state.console === "PS") {
@@ -132,7 +145,7 @@ class TransferTargetsComponent extends Component {
 
                 <FlatList
                     keyExtractor={item => item._id}
-                    data={this.state.fifaPlayers}
+                    data={this.state.transferTargetPlayers}
                     extraData={this.state}
                     width='100%'
                     ItemSeparatorComponent={this.FlatListItemSeparator}
