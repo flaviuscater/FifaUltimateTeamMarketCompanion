@@ -105,10 +105,10 @@ class TransferTargetsComponent extends Component {
     }
 
     isPlayerPresent(transferTargetPlayers, name, version, rating) {
-        let foundPlayer = this.state.transferTargetPlayers.find(fifaPlayer => fifaPlayer.name === name);
+        let foundPlayer = this.state.transferTargetPlayers.find(fifaPlayer => fifaPlayer.name === name && fifaPlayer.version === version && fifaPlayer.rating === rating);
 
         let playerExist = false;
-        if (foundPlayer !== null && foundPlayer !== undefined && foundPlayer.version === version && foundPlayer.rating === rating) {
+        if (foundPlayer !== null && foundPlayer !== undefined) {
             console.log("Found Player: ", foundPlayer);
             playerExist = true;
         }
@@ -164,6 +164,7 @@ class TransferTargetsComponent extends Component {
                             <SearchResultPlayerComponent name={item.name}
                                                          rating={item.rating}
                                                          version={item.version}
+                                                         imagePath={item.imagePath}
                                                          addPlayerMethod={this.addFifaPlayer}
                             />
                         </TouchableOpacity>

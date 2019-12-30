@@ -9,8 +9,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
     },
     button: {
-        width: '25%',
-        height: '25%',
+        width: 75,
+        height: 25,
         padding: 5,
         backgroundColor: '#4CAF50',
         borderRadius: 8,
