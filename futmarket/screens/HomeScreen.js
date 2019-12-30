@@ -6,9 +6,7 @@ import {
     View,
 } from 'react-native';
 
-import futPlayersService from '../app/service/FifaGraphQLService';
 import {Header} from "react-native-elements";
-import FutPlayerCardComponent from "../app/components/FutCardComponent/FutPlayerCardComponent";
 import TransferTargetsComponent from "../app/components/TransferTargetsComponent/TransferTargetsComponent";
 
 export default function HomeScreen() {

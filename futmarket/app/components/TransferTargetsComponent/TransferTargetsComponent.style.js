@@ -7,7 +7,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         // flex: 1,
         // margin: 2
+    },
 
+    innerContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+
+    outerContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
     },
 
     item: {
@@ -32,7 +43,7 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: '#4CAF50',
         borderRadius: 8,
-        marginTop: 10
+        marginTop: 50
     },
 
     buttonText: {
@@ -43,11 +54,21 @@ const styles = StyleSheet.create({
     consolePicker: {
         //position: 'absolute',
         alignSelf: 'flex-end',
-        // right: 5,
-        // top: 5,
+        right: 5,
+        top: 5,
         height: 50,
-        width: 100
-    }
+        width: 100,
+        //marginTop: 10
+    },
+
+    autocompleteContainer: {
+        //flex: 1,
+        left: 5,
+        position: 'absolute',
+        right: '35%',
+        top: 5,
+        zIndex: 1
+    },
 
 });
 

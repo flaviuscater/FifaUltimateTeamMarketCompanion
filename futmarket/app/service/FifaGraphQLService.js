@@ -6,9 +6,9 @@ import gql from "graphql-tag";
 // machine local ip adress
 let uri = 'http://192.168.1.250:4000/graphql';
 
-const query = gql`
-query getPlayer($name: String!, $version: String!) {
-  getPlayer(name: $name, version: $version) {
+const getPlayerByNameAndVersionQuery = gql`
+query getPlayer($name: String!, $version: String!, $rating: Int!) {
+  getPlayer(name: $name, version: $version, rating: $rating) {
     name,
     rating,
     imagePath,
@@ -17,11 +17,26 @@ query getPlayer($name: String!, $version: String!) {
   }
 }`;
 
+const getAllPlayersQuery = gql`
+query getPlayers{
+  getPlayers {
+    name,
+    rating,
+    imagePath,
+    _id,
+    version,
+    club
+  }
+}`;
+
 let client = new ApolloClient({uri: uri});
 
 const FifaGraphQLService = {
     getFifaPlayer: function(queryParam) {
-        return client.query({query: query, variables: queryParam});
+        return client.query({query: getPlayerByNameAndVersionQuery, variables: queryParam});
+    },
+    getAllFutPlayers: function(queryParam) {
+        return client.query({query: getAllPlayersQuery})
     }
 };
 

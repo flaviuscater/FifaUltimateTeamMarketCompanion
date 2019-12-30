@@ -18,7 +18,7 @@ const typeDefs = gql`
     }
     type Query {
         getPlayers: [Player]
-        getPlayer(name: String!, version: String!): Player
+        getPlayer(name: String!, version: String!, rating: Int!): Player
     }
     type Mutation {
         addPlayer(_id: ID!,
@@ -37,7 +37,7 @@ const resolvers = {
     Query: {
         getPlayer: async (parent, args) => {
             return new Promise((resolve, reject) => {
-               Player.findOne({name: args.name, version: args.version}, (err, player) => {
+               Player.findOne({name: args.name, version: args.version, rating: args.rating}, (err, player) => {
                    if (err) {
                        reject(err);
                    } else {
