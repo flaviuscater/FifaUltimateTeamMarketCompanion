@@ -4,7 +4,10 @@ import ApolloClient from "apollo-boost";
 import gql from "graphql-tag";
 
 // machine local ip adress
-let uri = 'http://192.168.1.250:4000/graphql';
+//let uri = 'http://192.168.1.250:4000/graphql';
+
+//wifi
+let uri = 'http://192.168.1.39:4000/graphql';
 
 const getPlayerByNameAndVersionQuery = gql`
 query getPlayer($name: String!, $version: String!, $rating: Int!) {
@@ -13,7 +16,9 @@ query getPlayer($name: String!, $version: String!, $rating: Int!) {
     rating,
     imagePath,
     _id,
-    version
+    version,
+    club,
+    position
   }
 }`;
 

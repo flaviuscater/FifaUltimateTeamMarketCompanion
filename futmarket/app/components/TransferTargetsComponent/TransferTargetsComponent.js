@@ -5,6 +5,7 @@ import {
     FlatList,
     TouchableOpacity,
     Picker,
+    Alert, Image
 } from "react-native";
 import {ListItem} from "react-native-elements";
 import fifaGraphQLService from "../../service/FifaGraphQLService"
@@ -12,6 +13,10 @@ import playerPriceService from "../../service/PlayerPriceService"
 import styles from './TransferTargetsComponent.style';
 import Autocomplete from "react-native-autocomplete-input";
 import SearchResultPlayerComponent from "../SearchResultPlayerComponent/SearchResultPlayerComponent";
+import SwipeableFlatList from 'react-native-swipeable-list';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Ripple from "../Ripple";
+import {FontSize, relativeWidth} from "../../utils";
 
 class TransferTargetsComponent extends Component {
     constructor(props) {
@@ -33,6 +38,7 @@ class TransferTargetsComponent extends Component {
     }
 
     componentDidMount() {
+        // use this for update method (FlatList has update on pull prop)
         fifaGraphQLService.getAllFutPlayers().then((json) => {
             const queryResult = json["data"]["getPlayers"];
             this.setState({futPlayers: queryResult});
@@ -53,18 +59,6 @@ class TransferTargetsComponent extends Component {
         const regex = new RegExp(`${searchPlayerQuery.trim()}`, 'i');
         return futPlayers.filter(futPlayer => futPlayer.name.search(regex) >= 0);
     }
-
-    FlatListItemSeparator = () => {
-        return (
-            <View
-                style={{
-                    height: 1,
-                    width: "100%",
-                    backgroundColor: "#607D8B",
-                }}
-            />
-        );
-    };
 
     addFifaPlayer(name, version, rating) {
         // Add Player if not exist already
@@ -150,6 +144,8 @@ class TransferTargetsComponent extends Component {
 
                 <Autocomplete
                     autoCapitalize="none"
+                    refreshing={true}
+                    removeClippedSubviews={true}
                     autoCorrect={false}
                     containerStyle={styles.autocompleteContainer}
                     data={futPlayers.length === 1 && comp(searchPlayerQuery, futPlayers[0].name) ? [] : futPlayers}
@@ -157,42 +153,166 @@ class TransferTargetsComponent extends Component {
                     onChangeText={text => this.setState({searchPlayerQuery: text})}
                     placeholder="Enter player name"
                     renderItem={({item}) => (
-                        <TouchableOpacity activeOpacity={0.7}
-                                          onPress={() => this.setState({
-                                              searchPlayerQuery: item.name
-                                          })}>
-                            <SearchResultPlayerComponent name={item.name}
-                                                         rating={item.rating}
-                                                         version={item.version}
-                                                         imagePath={item.imagePath}
-                                                         addPlayerMethod={this.addFifaPlayer}
-                            />
-                        </TouchableOpacity>
+                        <SearchResultPlayerComponent name={item.name}
+                                                     rating={item.rating}
+                                                     version={item.version}
+                                                     imagePath={item.imagePath}
+                                                     addPlayerMethod={this.addFifaPlayer}
+                        />
                     )}
                     keyExtractor={item => item._id}
                 />
 
                 {/*List of displayed players*/}
-                <FlatList
+                <SwipeableFlatList
+                    ref={(ref) => {
+                        this.swipeableList = ref
+                    }}
                     keyExtractor={item => item._id}
+                    width='100%'
+                    bounceFirstRowOnMount={false}
+                    refreshing={true}
+                    removeClippedSubviews={true}
                     data={this.state.transferTargetPlayers}
                     extraData={this.state}
-                    width='100%'
+                    maxSwipeDistance={relativeWidth(25)}
                     ItemSeparatorComponent={this.FlatListItemSeparator}
-                    renderItem={({item}) => (
-                        <ListItem
-                            title={`${item.name}`}
-                            subtitle={item.rating.toString()}
-                            leftAvatar={{source: {uri: item.imagePath}}}
-                            rightElement={<Text>Current price: {this.getCurrentConsolePlayerPrice(item._id)}</Text>}
-                        >
-                        </ListItem>
-                    )}
+                    renderQuickActions={({index, item}) =>
+                        this.renderQuickActionButton(index, item)
+                    }
+                    renderItem={({item}) => this.renderListItem(item)}
                 />
             </View>
 
         );
     }
+
+    /*UI Methods*/
+
+    FlatListItemSeparator = () => {
+        return (
+            <View
+                style={{
+                    height: 1,
+                    width: "100%",
+                    backgroundColor: "#607D8B",
+                }}
+            />
+        );
+    };
+
+    showAlert = (index, item) => {
+        this.swipeableList._onClose();
+        Alert.alert(
+            'Delete User',
+            `Are you sure you want to delete ${item.name}?`,
+            [
+                {
+                    text: 'No',
+                    onPress: () => {
+                    }
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => {
+
+                        if (this.state.transferTargetPlayers[index]._id === item._id) {
+                            let transferTargetPlayers = this.state.transferTargetPlayers;
+                            transferTargetPlayers.splice(index, 1);
+                            this.setState({transferTargetPlayers: transferTargetPlayers})
+
+                        } else {
+                            this.swipeableList._onClose()
+                        }
+                    },
+                    style: 'cancel',
+                },
+            ],
+            {cancelable: false},
+        );
+    };
+
+    renderQuickActionButton = (index, item) => {
+        return (
+            <View style={styles.quickActionContainer}>
+                <Ripple
+                    onPress={() => {
+                        this.showAlert(index, item);
+                    }} style={styles.quickActionButtonStyle}>
+                    <Icon
+                        name={'delete'}
+                        color={'white'}
+                        size={25}/>
+                    <Text
+                        style={styles.quickActionButtonTextStyle}>
+                        Delete
+                    </Text>
+                </Ripple>
+            </View>
+        )
+    };
+
+    renderListItem = (item) => {
+        return (
+            <View style={styles.cardContainer}>
+                <Image style={styles.profileImage}
+                       source={{uri: item.imagePath}}/>
+
+                <View style={styles.primaryTextStyle}>
+                    <Text style={{fontSize: FontSize.fontLarge, color: 'black'}}>
+                        {item.name}
+                    </Text>
+                    <Text style={styles.secondaryTextStyle}>
+                        {item.rating}
+                    </Text>
+                    <Text style={styles.secondaryTextStyle}>
+                        {item.version}
+                    </Text>
+                </View>
+
+                <View style={styles.pricesTextStyle}>
+                    <Text style={{fontSize: FontSize.fontLarge, color: 'black'}}>
+                        Current price: {this.getCurrentConsolePlayerPrice(item._id)}
+                    </Text>
+                    <Text style={styles.secondaryTextStyle}>
+                        Lowest price(Today): {this.getCurrentConsolePlayerPrice(item._id)}
+                    </Text>
+                    <Text style={styles.secondaryTextStyle}>
+                        Highest price(Today): {this.getCurrentConsolePlayerPrice(item._id)}
+                    </Text>
+                </View>
+            </View>
+        )
+    };
+
+    renderListItemOld = (item) => {
+        return (
+            <ListItem
+                title={`${item.name}`}
+                subtitle={item.rating.toString()}
+                leftAvatar={{source: {uri: item.imagePath}}}
+                rightElement={this.renderPriceItem(item)}
+            >
+            </ListItem>
+        )
+    };
+
+    renderPriceItem = (item) => {
+        return (
+            <View style={styles.pricesTextStyle}>
+                <Text style={{fontSize: FontSize.fontLarge, color: 'black'}}>
+                    Current price: {this.getCurrentConsolePlayerPrice(item._id)}
+                </Text>
+                <Text style={styles.secondaryTextStyle}>
+                    Lowest price(Today): {this.getCurrentConsolePlayerPrice(item._id)}
+                </Text>
+                <Text style={styles.secondaryTextStyle}>
+                    Highest price(Today): {this.getCurrentConsolePlayerPrice(item._id)}
+                </Text>
+            </View>
+        )
+    };
+
 }
 
 export default TransferTargetsComponent;
