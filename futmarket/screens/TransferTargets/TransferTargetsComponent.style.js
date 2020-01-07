@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import {relativeWidth} from "../../utils";
+import {relativeWidth} from "../../app/utils";
 
 const styles = StyleSheet.create({
 
@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
         top: 5,
         height: 50,
         width: 100,
+        color: '#ffffff'
         //marginTop: 10
     },
 
@@ -69,8 +70,8 @@ const styles = StyleSheet.create({
     },
     profileImage: {
         borderRadius: 100,
-        height: relativeWidth(15),
-        width: relativeWidth(15),
+        height: relativeWidth(20),
+        width: relativeWidth(20),
         marginEnd: relativeWidth(5)
     },
     primaryTextStyle: {

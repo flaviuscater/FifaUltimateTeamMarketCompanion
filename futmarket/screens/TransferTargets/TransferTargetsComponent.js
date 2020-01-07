@@ -2,21 +2,19 @@ import React, {Component} from "react";
 import {
     View,
     Text,
-    FlatList,
-    TouchableOpacity,
     Picker,
-    Alert, Image
+    Alert, Image, Button, ImageBackground, TouchableOpacity
 } from "react-native";
 import {ListItem} from "react-native-elements";
-import fifaGraphQLService from "../../service/FifaGraphQLService"
-import playerPriceService from "../../service/PlayerPriceService"
+import fifaGraphQLService from "../../app/service/FifaGraphQLService"
+import playerPriceService from "../../app/service/PlayerPriceService"
 import styles from './TransferTargetsComponent.style';
 import Autocomplete from "react-native-autocomplete-input";
-import SearchResultPlayerComponent from "../SearchResultPlayerComponent/SearchResultPlayerComponent";
+import SearchResultPlayerComponent from "../../app/components/SearchResultPlayerComponent/SearchResultPlayerComponent";
 import SwipeableFlatList from 'react-native-swipeable-list';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import Ripple from "../Ripple";
-import {FontSize, relativeWidth} from "../../utils";
+import Ripple from "../../app/components/Ripple";
+import {FontSize, relativeWidth} from "../../app/utils";
 
 class TransferTargetsComponent extends Component {
     constructor(props) {
@@ -131,58 +129,67 @@ class TransferTargetsComponent extends Component {
         const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
 
         return (
-            <View style={styles.MainContainer}>
-                <Picker style={styles.consolePicker}
-                        selectedValue={this.state.console}
-                        onValueChange={(itemValue, itemIndex) =>
-                            this.setState({console: itemValue})
-                        }>
-                    <Picker.Item label="PS" value="PS" color="blue"/>
-                    <Picker.Item label="Xbox" value="Xbox" color="green"/>
-                    <Picker.Item label="PC" value="PC" color="orange"/>
-                </Picker>
+            <ImageBackground
+                source={require('../../assets/images/fifa20_background.png')}
+                style={{
+                    flex: 1,
+                    width: null,
+                    height: null,
+                }}
+            >
+                <View style={styles.MainContainer}>
+                    <Picker style={styles.consolePicker}
+                            selectedValue={this.state.console}
+                            onValueChange={(itemValue, itemIndex) =>
+                                this.setState({console: itemValue})
+                            }>
+                        <Picker.Item label="PS" value="PS" color="blue"/>
+                        <Picker.Item label="Xbox" value="Xbox" color="green"/>
+                        <Picker.Item label="PC" value="PC" color="orange"/>
+                    </Picker>
 
-                <Autocomplete
-                    autoCapitalize="none"
-                    refreshing={true}
-                    removeClippedSubviews={true}
-                    autoCorrect={false}
-                    containerStyle={styles.autocompleteContainer}
-                    data={futPlayers.length === 1 && comp(searchPlayerQuery, futPlayers[0].name) ? [] : futPlayers}
-                    defaultValue={searchPlayerQuery}
-                    onChangeText={text => this.setState({searchPlayerQuery: text})}
-                    placeholder="Enter player name"
-                    renderItem={({item}) => (
-                        <SearchResultPlayerComponent name={item.name}
-                                                     rating={item.rating}
-                                                     version={item.version}
-                                                     imagePath={item.imagePath}
-                                                     addPlayerMethod={this.addFifaPlayer}
-                        />
-                    )}
-                    keyExtractor={item => item._id}
-                />
+                    <Autocomplete
+                        autoCapitalize="none"
+                        refreshing={true}
+                        removeClippedSubviews={true}
+                        autoCorrect={false}
+                        containerStyle={styles.autocompleteContainer}
+                        data={futPlayers.length === 1 && comp(searchPlayerQuery, futPlayers[0].name) ? [] : futPlayers}
+                        defaultValue={searchPlayerQuery}
+                        onChangeText={text => this.setState({searchPlayerQuery: text})}
+                        placeholder="Enter player name"
+                        renderItem={({item}) => (
+                            <SearchResultPlayerComponent name={item.name}
+                                                         rating={item.rating}
+                                                         version={item.version}
+                                                         imagePath={item.imagePath}
+                                                         addPlayerMethod={this.addFifaPlayer}
+                            />
+                        )}
+                        keyExtractor={item => item._id}
+                    />
 
-                {/*List of displayed players*/}
-                <SwipeableFlatList
-                    ref={(ref) => {
-                        this.swipeableList = ref
-                    }}
-                    keyExtractor={item => item._id}
-                    width='100%'
-                    bounceFirstRowOnMount={false}
-                    refreshing={true}
-                    removeClippedSubviews={true}
-                    data={this.state.transferTargetPlayers}
-                    extraData={this.state}
-                    maxSwipeDistance={relativeWidth(25)}
-                    ItemSeparatorComponent={this.FlatListItemSeparator}
-                    renderQuickActions={({index, item}) =>
-                        this.renderQuickActionButton(index, item)
-                    }
-                    renderItem={({item}) => this.renderListItem(item)}
-                />
-            </View>
+                    {/*List of displayed players*/}
+                    <SwipeableFlatList
+                        ref={(ref) => {
+                            this.swipeableList = ref
+                        }}
+                        keyExtractor={item => item._id}
+                        width='100%'
+                        bounceFirstRowOnMount={false}
+                        refreshing={true}
+                        removeClippedSubviews={true}
+                        data={this.state.transferTargetPlayers}
+                        extraData={this.state}
+                        maxSwipeDistance={relativeWidth(25)}
+                        ItemSeparatorComponent={this.FlatListItemSeparator}
+                        renderQuickActions={({index, item}) =>
+                            this.renderQuickActionButton(index, item)
+                        }
+                        renderItem={({item}) => this.renderListItem(item)}
+                    />
+                </View>
+            </ImageBackground>
 
         );
     }
@@ -255,8 +262,13 @@ class TransferTargetsComponent extends Component {
     renderListItem = (item) => {
         return (
             <View style={styles.cardContainer}>
-                <Image style={styles.profileImage}
-                       source={{uri: item.imagePath}}/>
+                <TouchableOpacity onPress={() => this.props.navigation.push('PlayerDetails', {
+                    name: item.name,
+                    rating: item.version,
+                })}>
+                    <Image style={styles.profileImage}
+                           source={{uri: item.imagePath}}/>
+                </TouchableOpacity>
 
                 <View style={styles.primaryTextStyle}>
                     <Text style={{fontSize: FontSize.fontLarge, color: 'black'}}>
@@ -314,5 +326,9 @@ class TransferTargetsComponent extends Component {
     };
 
 }
+
+TransferTargetsComponent.navigationOptions = {
+    title: 'Transfer Targets'
+};
 
 export default TransferTargetsComponent;
