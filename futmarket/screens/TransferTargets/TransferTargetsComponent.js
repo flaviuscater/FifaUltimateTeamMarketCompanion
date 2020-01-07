@@ -5,7 +5,6 @@ import {
     Picker,
     Alert, Image, Button, ImageBackground, TouchableOpacity
 } from "react-native";
-import {ListItem} from "react-native-elements";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
 import playerPriceService from "../../app/service/PlayerPriceService"
 import styles from './TransferTargetsComponent.style';
@@ -28,7 +27,7 @@ class TransferTargetsComponent extends Component {
             seed: 1,
             error: null,
             refreshing: false,
-            console: "PS",
+            console: "ps",
             futPlayers: [],
             searchPlayerQuery: '',
             querySelectedPlayer: {name: "", rating: 0, version: ""}
@@ -80,6 +79,23 @@ class TransferTargetsComponent extends Component {
                     })
                     .catch(error => console.error(error));
 
+                playerPriceService.getDailyPlayerPrice(futbinId)
+                    .then(response => response.json())
+                    .then(data => {
+                        //lowest daily price todo: save the price in an object
+                        fifaPlayer.psDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "ps");
+                        fifaPlayer.xboxDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "xbox");
+                        fifaPlayer.pcDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "pc");
+
+                        //highest todo: save the price in an object
+                        fifaPlayer.psDailyHighestPlayerPrice = playerPriceService.getDailyHighestPlayerPrice(data, "ps");
+                        fifaPlayer.xboxDailyHighestPlayerPrice = playerPriceService.getDailyHighestPlayerPrice(data, "xbox");
+                        fifaPlayer.pcDailyHighestPlayerPrice = playerPriceService.getDailyHighestPlayerPrice(data, "pc");
+
+                    })
+                    .catch(error => console.error(error));
+
+
                 if (res !== null && fifaPlayer !== null) {
                     this.setState({
                         transferTargetPlayers: [...this.state.transferTargetPlayers, fifaPlayer],
@@ -111,12 +127,38 @@ class TransferTargetsComponent extends Component {
         let currentPlayer = this.state.transferTargetPlayers.find((element) => {
             return element['_id'] === futbinId;
         });
-        if (this.state.console === "PS") {
+        if (this.state.console === "ps") {
             return currentPlayer.psPlayerPrice;
-        } else if (this.state.console === "Xbox") {
+        } else if (this.state.console === "xbox") {
             return currentPlayer.xboxPlayerPrice;
         } else {
             return currentPlayer.pcPlayerPrice;
+        }
+    }
+
+    getConsoleDailyLowestPlayerPrice(futbinId) {
+        let currentPlayer = this.state.transferTargetPlayers.find((element) => {
+            return element['_id'] === futbinId;
+        });
+        if (this.state.console === "ps") {
+            return currentPlayer.psDailyLowestPlayerPrice;
+        } else if (this.state.console === "xbox") {
+            return currentPlayer.xboxDailyLowestPlayerPrice;
+        } else {
+            return currentPlayer.pcDailyLowestPlayerPrice;
+        }
+    }
+
+    getConsoleDailyHighestPlayerPrice(futbinId) {
+        let currentPlayer = this.state.transferTargetPlayers.find((element) => {
+            return element['_id'] === futbinId;
+        });
+        if (this.state.console === "ps") {
+            return currentPlayer.psDailyHighestPlayerPrice;
+        } else if (this.state.console === "xbox") {
+            return currentPlayer.xboxDailyHighestPlayerPrice;
+        } else {
+            return currentPlayer.pcDailyHighestPlayerPrice;
         }
     }
 
@@ -143,9 +185,9 @@ class TransferTargetsComponent extends Component {
                             onValueChange={(itemValue, itemIndex) =>
                                 this.setState({console: itemValue})
                             }>
-                        <Picker.Item label="PS" value="PS" color="blue"/>
-                        <Picker.Item label="Xbox" value="Xbox" color="green"/>
-                        <Picker.Item label="PC" value="PC" color="orange"/>
+                        <Picker.Item label="PS" value="ps" color="blue"/>
+                        <Picker.Item label="Xbox" value="xbox" color="green"/>
+                        <Picker.Item label="PC" value="pc" color="orange"/>
                     </Picker>
 
                     <Autocomplete
@@ -287,43 +329,43 @@ class TransferTargetsComponent extends Component {
                         Current price: {this.getCurrentConsolePlayerPrice(item._id)}
                     </Text>
                     <Text style={styles.secondaryTextStyle}>
-                        Lowest price(Today): {this.getCurrentConsolePlayerPrice(item._id)}
+                        Lowest price(Today): {this.getConsoleDailyLowestPlayerPrice(item._id)}
                     </Text>
                     <Text style={styles.secondaryTextStyle}>
-                        Highest price(Today): {this.getCurrentConsolePlayerPrice(item._id)}
+                        Highest price(Today): {this.getConsoleDailyHighestPlayerPrice(item._id)}
                     </Text>
                 </View>
             </View>
         )
     };
 
-    renderListItemOld = (item) => {
-        return (
-            <ListItem
-                title={`${item.name}`}
-                subtitle={item.rating.toString()}
-                leftAvatar={{source: {uri: item.imagePath}}}
-                rightElement={this.renderPriceItem(item)}
-            >
-            </ListItem>
-        )
-    };
-
-    renderPriceItem = (item) => {
-        return (
-            <View style={styles.pricesTextStyle}>
-                <Text style={{fontSize: FontSize.fontLarge, color: 'black'}}>
-                    Current price: {this.getCurrentConsolePlayerPrice(item._id)}
-                </Text>
-                <Text style={styles.secondaryTextStyle}>
-                    Lowest price(Today): {this.getCurrentConsolePlayerPrice(item._id)}
-                </Text>
-                <Text style={styles.secondaryTextStyle}>
-                    Highest price(Today): {this.getCurrentConsolePlayerPrice(item._id)}
-                </Text>
-            </View>
-        )
-    };
+    // renderListItemOld = (item) => {
+    //     return (
+    //         <ListItem
+    //             title={`${item.name}`}
+    //             subtitle={item.rating.toString()}
+    //             leftAvatar={{source: {uri: item.imagePath}}}
+    //             rightElement={this.renderPriceItem(item)}
+    //         >
+    //         </ListItem>
+    //     )
+    // };
+    //
+    // renderPriceItem = (item) => {
+    //     return (
+    //         <View style={styles.pricesTextStyle}>
+    //             <Text style={{fontSize: FontSize.fontLarge, color: 'black'}}>
+    //                 Current price: {this.getCurrentConsolePlayerPrice(item._id)}
+    //             </Text>
+    //             <Text style={styles.secondaryTextStyle}>
+    //                 Lowest price(Today): {playerPriceService.getDailyLowestPlayerPrice(item._id, this.state.console)}
+    //             </Text>
+    //             <Text style={styles.secondaryTextStyle}>
+    //                 Highest price(Today): {playerPriceService.getDailyHighestPlayerPrice(item._id, this.state.console)}
+    //             </Text>
+    //         </View>
+    //     )
+    // };
 
 }
 
