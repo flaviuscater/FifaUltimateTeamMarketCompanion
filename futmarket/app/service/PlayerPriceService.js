@@ -14,8 +14,13 @@ const PlayerPriceService = {
         // .catch(error => console.error(error));
     },
 
-    getDailyPlayerPrice: function (futbinId) {
+    getHourlyTodayPlayerPrice: function (futbinId) {
         return fetch('https://www.futbin.com/20/playerGraph?type=today&year=20&player=' + futbinId)
+            .then(response => response.json());
+    },
+
+    getDailyPlayerPrice: function (futbinId) {
+        return fetch('https://www.futbin.com/20/playerGraph?type=daily_graph&year=20&player=' + futbinId)
             .then(response => response.json());
     },
 

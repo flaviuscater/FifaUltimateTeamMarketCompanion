@@ -80,7 +80,7 @@ class TransferTargetsComponent extends Component {
                     })
                     .catch(error => console.error(error));
 
-                playerPriceService.getDailyPlayerPrice(futbinId)
+                playerPriceService.getHourlyTodayPlayerPrice(futbinId)
                     .then(data => {
                         //lowest daily price todo: save the price in an object
                         fifaPlayer.psDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "ps");
