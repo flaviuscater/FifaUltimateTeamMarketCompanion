@@ -7,7 +7,10 @@ import gql from "graphql-tag";
 //let uri = 'http://192.168.1.250:4000/graphql';
 
 //wifi
-let uri = 'http://192.168.1.39:4000/graphql';
+let uri = 'http://192.168.1.40:4000/graphql';
+
+//hotspot
+//let uri = 'http://192.168.43.116:4000/graphql';
 
 const getPlayerByNameAndVersionQuery = gql`
 query getPlayer($name: String!, $version: String!, $rating: Int!) {

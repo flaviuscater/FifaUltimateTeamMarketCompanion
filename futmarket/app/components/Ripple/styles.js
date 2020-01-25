@@ -10,8 +10,8 @@ const styles = StyleSheet.create({
     },
 
     ripple: {
-        width: radius * 2,
-        height: radius * 2,
+        width: radius * 1.5,
+        height: radius * 1.5,
         borderRadius: radius,
         overflow: 'hidden',
         position: 'absolute',

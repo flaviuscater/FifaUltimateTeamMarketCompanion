@@ -42,3 +42,15 @@ export const FontSize = {
     fontXXLarge,
     fontXXXLarge
 };
+
+export function latinize(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+}
+
+// Used for rating sort
+export function compareRating(a, b) {
+    const ratingA = a.rating;
+    const ratingB = b.rating;
+
+    return ratingB - ratingA;
+}

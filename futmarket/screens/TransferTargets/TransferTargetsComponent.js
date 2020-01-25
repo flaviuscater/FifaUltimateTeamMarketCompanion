@@ -3,7 +3,7 @@ import {
     View,
     Text,
     Picker,
-    Alert, Image, Button, ImageBackground, TouchableOpacity
+    Alert, Image, Button, ImageBackground, TouchableOpacity, ScrollView, TouchableWithoutFeedback
 } from "react-native";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
 import playerPriceService from "../../app/service/PlayerPriceService"
@@ -13,7 +13,7 @@ import SearchResultPlayerComponent from "../../app/components/SearchResultPlayer
 import SwipeableFlatList from 'react-native-swipeable-list';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ripple from "../../app/components/Ripple";
-import {FontSize, relativeWidth} from "../../app/utils";
+import {FontSize, relativeWidth, latinize, compareRating} from "../../app/utils";
 
 class TransferTargetsComponent extends Component {
     constructor(props) {
@@ -54,7 +54,8 @@ class TransferTargetsComponent extends Component {
 
         const {futPlayers} = this.state;
         const regex = new RegExp(`${searchPlayerQuery.trim()}`, 'i');
-        return futPlayers.filter(futPlayer => futPlayer.name.search(regex) >= 0);
+        // Latinize search query ( transform letters like èé to e")
+        return futPlayers.filter(futPlayer => latinize(futPlayer.name).search(regex) >= 0);
     }
 
     addFifaPlayer(name, version, rating) {
@@ -80,7 +81,6 @@ class TransferTargetsComponent extends Component {
                     .catch(error => console.error(error));
 
                 playerPriceService.getDailyPlayerPrice(futbinId)
-                    .then(response => response.json())
                     .then(data => {
                         //lowest daily price todo: save the price in an object
                         fifaPlayer.psDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "ps");
@@ -168,6 +168,8 @@ class TransferTargetsComponent extends Component {
     render() {
         const {searchPlayerQuery} = this.state;
         const futPlayers = this.findPlayer(searchPlayerQuery);
+        // sort fut Players by rating
+        futPlayers.sort(compareRating);
         const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
 
         return (
@@ -212,24 +214,26 @@ class TransferTargetsComponent extends Component {
                     />
 
                     {/*List of displayed players*/}
-                    <SwipeableFlatList
-                        ref={(ref) => {
-                            this.swipeableList = ref
-                        }}
-                        keyExtractor={item => item._id}
-                        width='100%'
-                        bounceFirstRowOnMount={false}
-                        refreshing={true}
-                        removeClippedSubviews={true}
-                        data={this.state.transferTargetPlayers}
-                        extraData={this.state}
-                        maxSwipeDistance={relativeWidth(25)}
-                        ItemSeparatorComponent={this.FlatListItemSeparator}
-                        renderQuickActions={({index, item}) =>
-                            this.renderQuickActionButton(index, item)
-                        }
-                        renderItem={({item}) => this.renderListItem(item)}
-                    />
+                    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+                        <SwipeableFlatList
+                            ref={(ref) => {
+                                this.swipeableList = ref
+                            }}
+                            keyExtractor={item => item._id}
+                            width='100%'
+                            bounceFirstRowOnMount={false}
+                            refreshing={true}
+                            removeClippedSubviews={true}
+                            data={this.state.transferTargetPlayers}
+                            extraData={this.state}
+                            maxSwipeDistance={relativeWidth(25)}
+                            ItemSeparatorComponent={this.FlatListItemSeparator}
+                            renderQuickActions={({index, item}) =>
+                                this.renderQuickActionButton(index, item)
+                            }
+                            renderItem={({item}) => this.renderListItem(item)}
+                        />
+                    </ScrollView>
                 </View>
             </ImageBackground>
 
@@ -305,15 +309,19 @@ class TransferTargetsComponent extends Component {
         return (
             <View style={styles.cardContainer}>
                 <TouchableOpacity onPress={() => this.props.navigation.push('PlayerDetails', {
+                    futbinId: item._id,
                     name: item.name,
-                    rating: item.version,
+                    rating: item.rating,
+                    version: item.version,
+                    imagePath: item.imagePath,
+                    position: item.position
                 })}>
                     <Image style={styles.profileImage}
                            source={{uri: item.imagePath}}/>
                 </TouchableOpacity>
 
                 <View style={styles.primaryTextStyle}>
-                    <Text style={{fontSize: FontSize.fontLarge, color: 'black'}}>
+                    <Text style={{fontSize: FontSize.fontXSmall, color: 'black'}}>
                         {item.name}
                     </Text>
                     <Text style={styles.secondaryTextStyle}>
@@ -325,7 +333,7 @@ class TransferTargetsComponent extends Component {
                 </View>
 
                 <View style={styles.pricesTextStyle}>
-                    <Text style={{fontSize: FontSize.fontLarge, color: 'black'}}>
+                    <Text style={{fontSize: FontSize.fontXSmall, color: 'black'}}>
                         Current price: {this.getCurrentConsolePlayerPrice(item._id)}
                     </Text>
                     <Text style={styles.secondaryTextStyle}>

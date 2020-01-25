@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import {relativeWidth} from "../../app/utils";
+import {FontSize, relativeHeight, relativeWidth} from "../../app/utils";
 
 const styles = StyleSheet.create({
 
@@ -9,6 +9,15 @@ const styles = StyleSheet.create({
         marginTop: 20
         // flex: 1,
         // margin: 2
+    },
+
+    scrollViewContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 5,
+        margin: 2,
+        borderWidth: 1,
     },
 
     consolePicker: {
@@ -40,6 +49,8 @@ const styles = StyleSheet.create({
         margin: relativeWidth(2),
         backgroundColor: 'red',
         padding: relativeWidth(5),
+        height: relativeHeight(10),
+        width: relativeWidth(22)
     },
     quickActionButtonTextStyle: {
         alignSelf: 'center',
@@ -69,17 +80,18 @@ const styles = StyleSheet.create({
         padding: relativeWidth(2)
     },
     profileImage: {
-        borderRadius: 100,
-        height: relativeWidth(20),
-        width: relativeWidth(20),
-        marginEnd: relativeWidth(5)
+        borderRadius: 75,
+        height: relativeWidth(15),
+        width: relativeWidth(15),
+        marginEnd: relativeWidth(1)
     },
     primaryTextStyle: {
         flex: 1,
         justifyContent: 'center',
     },
     secondaryTextStyle: {
-        fontWeight: "200"
+        fontWeight: "200",
+        fontSize: FontSize.fontXXSmall
     },
     pricesTextStyle: {
         flex: 2,
