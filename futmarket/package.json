@@ -13,27 +13,26 @@
   },
   "dependencies": {
     "@expo/samples": "~3.0.3",
-    "@expo/vector-icons": "^10.0.3",
+    "@expo/vector-icons": "^10.0.0",
     "@react-navigation/web": "^1.0.0-alpha.9",
-    "@shoutem/ui": "^1.0.3",
     "apollo-boost": "^0.4.4",
-    "expo": "^35.0.0",
-    "expo-asset": "^7.0.0",
-    "expo-constants": "^7.0.0",
-    "expo-font": "^7.0.0",
-    "expo-web-browser": "^7.0.0",
+    "expo": "^36.0.0",
+    "expo-asset": "~8.0.0",
+    "expo-constants": "~8.0.0",
+    "expo-font": "~8.0.0",
+    "expo-web-browser": "~8.0.0",
     "graphql": "^14.5.8",
     "graphql-request": "^1.8.2",
     "graphql-tag": "^2.10.1",
     "native-base": "^2.1.5",
     "prop-types": "^15.7.2",
-    "react": "16.11.0",
+    "react": "16.9.0",
     "react-apollo": "^3.1.3",
-    "react-dom": "16.8.3",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
+    "react-dom": "16.9.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.1.tar.gz",
     "react-native-autocomplete-input": "^4.1.0",
     "react-native-elements": "^1.2.6",
-    "react-native-gesture-handler": "~1.3.0",
+    "react-native-gesture-handler": "~1.5.0",
     "react-native-material-ui": "^1.30.1",
     "react-native-pure-chart": "^0.0.24",
     "react-native-render-html": "^4.1.2",
@@ -45,8 +44,8 @@
     "react-navigation": "^3.12.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^7.0.0",
-    "jest-expo": "^35.0.0"
+    "babel-preset-expo": "^8.0.0",
+    "jest-expo": "^36.0.0"
   },
   "private": true
 }

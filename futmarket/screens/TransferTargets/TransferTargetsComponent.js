@@ -3,7 +3,7 @@ import {
     View,
     Text,
     Picker,
-    Alert, Image, Button, ImageBackground, TouchableOpacity, ScrollView, TouchableWithoutFeedback
+    Alert, Image, Button, ImageBackground, TouchableOpacity, ScrollView, TouchableWithoutFeedback, SafeAreaView
 } from "react-native";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
 import playerPriceService from "../../app/service/PlayerPriceService"
@@ -214,7 +214,8 @@ class TransferTargetsComponent extends Component {
                     />
 
                     {/*List of displayed players*/}
-                    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+                    {/*<ScrollView contentContainerStyle={styles.scrollViewContainer}>*/}
+                    <SafeAreaView style={styles.scrollViewContainer}>
                         <SwipeableFlatList
                             ref={(ref) => {
                                 this.swipeableList = ref
@@ -233,7 +234,7 @@ class TransferTargetsComponent extends Component {
                             }
                             renderItem={({item}) => this.renderListItem(item)}
                         />
-                    </ScrollView>
+                    </SafeAreaView>
                 </View>
             </ImageBackground>
 

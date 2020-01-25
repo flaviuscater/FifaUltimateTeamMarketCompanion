@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {
-    ImageBackground,
-    Platform, ScrollView,
+    ImageBackground, Picker,
+    Platform, SafeAreaView, ScrollView,
     StyleSheet, Text,
     View,
 } from 'react-native';
@@ -16,90 +16,88 @@ export default class PlayerDetailsScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            psHourlyPriceArray: [],
-            xboxHourlyPriceArray: [],
-            pcHourlyPriceArray: [],
-            hourlyGraphLabels: []
-        };
+            console: "ps",
+            psHourlyPriceArray: [{x: '2018-02-01', y: 20}],
+            xboxHourlyPriceArray: [{x: '2018-02-01', y: 20}],
+            pcHourlyPriceArray: [{x: '2018-02-01', y: 20}],
+            currentDailyGraphArray: [{x: '2018-02-01', y: 20}]
+        }
     }
 
     componentDidMount() {
         playerPriceService.getDailyPlayerPrice(this.props.navigation.getParam('futbinId', '0'))
             .then(res => {
-                    this.setState({psHourlyPriceArray:  this.constructHourlyPriceArray(res["ps"])});
-                    //this.setState({xboxHourlyPriceArray: this.constructHourlyPriceArray(res["xbox"])});
-                    //this.setState({pcHourlyPriceArray: this.constructHourlyPriceArray(res["pc"])});
+                    this.setState({psHourlyPriceArray: this.constructHourlyPriceArray(res["ps"])});
+                    this.setState({xboxHourlyPriceArray: this.constructHourlyPriceArray(res["xbox"])});
+                    this.setState({pcHourlyPriceArray: this.constructHourlyPriceArray(res["pc"])});
+
+                    this.setState({currentDailyGraphArray: this.state.psHourlyPriceArray})
                 }
             )
             .catch(error => console.error(error));
-    }
-
-    getHourlyGraphLabels(array) {
-       return array.map(function (item) {
-            // first element from the Array is the epoch time timestamp
-            return new Date(item[0]).getHours();
-        })
-           //.filter((item) => item % 2 === 0);
     }
 
     constructHourlyPriceArray(dateAndPriceArray) {
         let hourlyPricesArray = [];
         let i = 0;
         dateAndPriceArray.forEach(item => {
-            hourlyPricesArray[i] = {x: new Date(item[0]), y: item[1]};
+            hourlyPricesArray[i] = {x: new Date(item[0]).toUTCString(), y: item[1]};
             i++;
         });
         return hourlyPricesArray;
     }
 
+    setCurrentDailyGraphArray(console) {
+        if (console === "ps") {
+            this.setState({currentDailyGraphArray: this.state.psHourlyPriceArray})
+        } else if (console === "xbox") {
+            this.setState({currentDailyGraphArray: this.state.xboxHourlyPriceArray})
+        } else {
+            this.setState({currentDailyGraphArray: this.state.pcHourlyPriceArray})
+        }
+    }
+
+
     render() {
         const {navigation} = this.props;
+        const consoleColor = {ps: '#345ed1', xbox: '#4dde14', pc: '#fc6b03'};
 
         let graphData = [
             {
-                seriesName: 'series1',
-                data: [
-                            {x: '2018-02-01', y: 20},
-                            {x: '2018-02-02', y: 100},
-                            {x: '2018-02-03', y: 140},
-                            {x: '2018-02-04', y: 550},
-                            {x: '2018-02-05', y: 40}
-                        ],
-                //data: this.state.psHourlyPriceArray,
-                color: '#297AB1'
+                seriesName: 'PS4',
+                data: this.state.currentDailyGraphArray,
+                color: consoleColor[this.state.console],
+                numberOfYAxisGuideLine: this.state.currentDailyGraphArray.length / 2
             }
-            // {
-            //     seriesName: 'series2',
-            //     data: [
-            //         {x: '2018-02-01', y: 20},
-            //         {x: '2018-02-02', y: 100},
-            //         {x: '2018-02-03', y: 140},
-            //         {x: '2018-02-04', y: 550},
-            //         {x: '2018-02-05', y: 40}
-            //     ],
-            //     //data: this.state.xboxHourlyPriceArray,
-            //     color: 'green'
-            // }
         ];
-        //console.log(this.state.psHourlyPriceArray);
-        //console.log(sampleData[0].data);
         return (
             <View>
-                <ScrollView>
+                <SafeAreaView>
                     <Card title={navigation.getParam('name', '??')}>
                         <Image
                             style={styles.cardImage}
                             resizeMode="cover"
-                            source={{uri: navigation.getParam('imagePath', '0') }}
+                            source={{uri: navigation.getParam('imagePath', '0')}}
                         />
                         <Text style={{marginBottom: 10}}>
                             Rating: {navigation.getParam('rating', '0')} {'\n'}
                             Position: {navigation.getParam('position', '0')}
                         </Text>
+                        <Picker style={styles.consolePicker}
+                                selectedValue={this.state.console}
+                                onValueChange={(itemValue, itemIndex) =>{
+                                    this.setState({console: itemValue});
+                                    this.setCurrentDailyGraphArray(console);
+                                }
+                                }>
+                            <Picker.Item label="PS" value="ps" color="blue"/>
+                            <Picker.Item label="Xbox" value="xbox" color="green"/>
+                            <Picker.Item label="PC" value="pc" color="orange"/>
+                        </Picker>
                     </Card>
-                    <PureChart data={graphData} type='line' />
+                    <PureChart data={graphData} type='line'/>
 
-                </ScrollView>
+                </SafeAreaView>
             </View>
         );
     }

@@ -9,6 +9,16 @@ const styles = StyleSheet.create({
           height: 100,
           width: 100
     },
+    consolePicker: {
+        //position: 'absolute',
+        alignSelf: 'flex-end',
+        right: 5,
+        top: 5,
+        height: 50,
+        width: 100,
+        color: '#ffffff'
+        //marginTop: 10
+    },
 });
 
 export default styles;
