@@ -41,9 +41,9 @@ export default class PlayerDetailsScreen extends Component {
     fetchHourlyTodayPlayerPrices() {
         playerPriceService.getHourlyTodayPlayerPrice(this.props.navigation.getParam('futbinId', '0'))
             .then(res => {
-                    this.setState({psHourlyPriceArray: this.constructHourlyPriceArray(res["ps"])});
-                    this.setState({xboxHourlyPriceArray: this.constructHourlyPriceArray(res["xbox"])});
-                    this.setState({pcHourlyPriceArray: this.constructHourlyPriceArray(res["pc"])});
+                    this.setState({psHourlyPriceArray: this.constructGraphPricesArray(res["ps"])});
+                    this.setState({xboxHourlyPriceArray: this.constructGraphPricesArray(res["xbox"])});
+                    this.setState({pcHourlyPriceArray: this.constructGraphPricesArray(res["pc"])});
 
                     this.setState({currentHourlyGraphArray: this.state.psHourlyPriceArray});
                     this.setState({currentDailyGraphArray: this.state.psDailyPriceArray});
@@ -59,9 +59,9 @@ export default class PlayerDetailsScreen extends Component {
     fetchDailyPlayerPrices() {
         playerPriceService.getDailyPlayerPrice(this.props.navigation.getParam('futbinId', '0'))
             .then(res => {
-                    this.setState({psDailyPriceArray: this.constructHourlyPriceArray(res["ps"])});
-                    this.setState({xboxDailyPriceArray: this.constructHourlyPriceArray(res["xbox"])});
-                    this.setState({pcDailyPriceArray: this.constructHourlyPriceArray(res["pc"])});
+                    this.setState({psDailyPriceArray: this.constructGraphPricesArray(res["ps"])});
+                    this.setState({xboxDailyPriceArray: this.constructGraphPricesArray(res["xbox"])});
+                    this.setState({pcDailyPriceArray: this.constructGraphPricesArray(res["pc"])});
 
                     this.setState({currentDailyGraphArray: this.state.psDailyPriceArray})
                 }
@@ -69,23 +69,45 @@ export default class PlayerDetailsScreen extends Component {
             .catch(error => console.error(error));
     }
 
-    constructHourlyPriceArray(dateAndPriceArray) {
-        let hourlyPricesArray = [];
+    constructGraphPricesArray(dateAndPriceArray) {
+        let pricesArray = [];
         let i = 0;
         dateAndPriceArray.forEach(item => {
-            hourlyPricesArray[i] = {x: new Date(item[0]).toUTCString(), y: item[1]};
+            pricesArray[i] = {x: new Date(item[0]).toUTCString(), y: item[1]};
             i++;
         });
-        return hourlyPricesArray;
+        return pricesArray;
     }
 
     setCurrentHourlyGraphArray(console) {
         if (console === "ps") {
-            this.setState({currentHourlyGraphArray: this.state.psHourlyPriceArray})
+            this.setState({currentHourlyGraphArray: this.state.psHourlyPriceArray}, function () {
+                this.setState({currentGraphArray: this.state.currentHourlyGraphArray});
+            })
         } else if (console === "xbox") {
-            this.setState({currentHourlyGraphArray: this.state.xboxHourlyPriceArray})
+            this.setState({currentHourlyGraphArray: this.state.xboxHourlyPriceArray}, function () {
+                this.setState({currentGraphArray: this.state.currentHourlyGraphArray});
+            })
         } else {
-            this.setState({currentHourlyGraphArray: this.state.pcHourlyPriceArray})
+            this.setState({currentHourlyGraphArray: this.state.pcHourlyPriceArray}, function () {
+                this.setState({currentGraphArray: this.state.currentHourlyGraphArray});
+            })
+        }
+    }
+
+    setCurrentDailyGraphArray(console) {
+        if (console === "ps") {
+            this.setState({currentDailyGraphArray: this.state.psDailyPriceArray}, function () {
+                this.setState({currentGraphArray: this.state.currentDailyGraphArray});
+            })
+        } else if (console === "xbox") {
+            this.setState({currentDailyGraphArray: this.state.xboxDailyPriceArray}, function () {
+                this.setState({currentGraphArray: this.state.currentDailyGraphArray});
+            })
+        } else {
+            this.setState({currentDailyGraphArray: this.state.pcDailyPriceArray}, function () {
+                this.setState({currentGraphArray: this.state.currentDailyGraphArray});
+            })
         }
     }
 
@@ -119,7 +141,11 @@ export default class PlayerDetailsScreen extends Component {
                                 selectedValue={this.state.console}
                                 onValueChange={(itemValue, itemIndex) => {
                                     this.setState({console: itemValue});
-                                    this.setCurrentHourlyGraphArray(console);
+                                    if (this.state.toggleButtonValue === "Hourly") {
+                                        this.setCurrentHourlyGraphArray(itemValue);
+                                    } else if (this.state.toggleButtonValue === "Daily") {
+                                        this.setCurrentDailyGraphArray(itemValue);
+                                    }
                                 }
                                 }>
                             <Picker.Item label="PS" value="ps" color="blue"/>
@@ -131,9 +157,9 @@ export default class PlayerDetailsScreen extends Component {
                         onValueChange={value => {
                             this.setState({toggleButtonValue: value});
                             if (value === "Hourly") {
-                                this.setState({currentGraphArray: this.state.currentHourlyGraphArray});
-                            } else {
-                                this.setState({currentGraphArray: this.state.currentDailyGraphArray});
+                                this.setCurrentHourlyGraphArray(this.state.console);
+                            } else if (value === "Daily") {
+                                this.setCurrentDailyGraphArray(this.state.console);
                             }
                         }}
                         value={this.state.toggleButtonValue}
