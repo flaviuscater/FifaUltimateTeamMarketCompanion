@@ -19,6 +19,16 @@ const styles = StyleSheet.create({
         color: '#000000',
         //marginTop: 10
     },
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'stretch' // if you want to fill rows left to right
+    },
+    item: {
+        width: '25%' // is 50% of container width
+    }
 });
 
 export default styles;

@@ -10,7 +10,7 @@ import styles from "./PlayerDetailsScreen.style";
 import {width} from "../../app/utils/index.js";
 import playerPriceService from "../../app/service/PlayerPriceService";
 import PureChart from "react-native-pure-chart";
-import { ToggleButton } from 'react-native-paper';
+import {ToggleButton} from 'react-native-paper';
 
 export default class PlayerDetailsScreen extends Component {
 
@@ -117,7 +117,7 @@ export default class PlayerDetailsScreen extends Component {
                         </Text>
                         <Picker style={styles.consolePicker}
                                 selectedValue={this.state.console}
-                                onValueChange={(itemValue, itemIndex) =>{
+                                onValueChange={(itemValue, itemIndex) => {
                                     this.setState({console: itemValue});
                                     this.setCurrentHourlyGraphArray(console);
                                 }
@@ -139,8 +139,16 @@ export default class PlayerDetailsScreen extends Component {
                         value={this.state.toggleButtonValue}
                         style={{justifyContent: 'center'}}
                     >
-                        <ToggleButton icon={require('../../assets/images/daily_graph.png')} value="Daily" />
-                        <ToggleButton icon={require('../../assets/images/hourly_graph.png')} value="Hourly" />
+                        <View style={styles.container}>
+                            <View style={styles.item}>
+                                <Text>Daily Graph</Text>
+                                <ToggleButton icon={require('../../assets/images/daily_graph.png')} value="Daily"/>
+                            </View>
+                            <View style={styles.item}>
+                                <Text>Hourly Graph</Text>
+                                <ToggleButton icon={require('../../assets/images/hourly_graph.png')} value="Hourly"/>
+                            </View>
+                        </View>
                     </ToggleButton.Row>
                     <PureChart data={graphData} type='line'/>
 
