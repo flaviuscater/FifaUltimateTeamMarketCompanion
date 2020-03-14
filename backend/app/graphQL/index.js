@@ -1,14 +1,14 @@
 const express = require('express');
 const {ApolloServer, gql} = require('apollo-server-express');
-require('./config');
+require('../repository/repository');
 
-const Player = require('../models/Player');
+const Player = require('../models/persistence/Player');
 
 const typeDefs = gql`
     type Player {
         _id: ID!,
         name: String,
-        imagePath: String,
+        imageUrl: String,
         club: String,
         nationality: String,
         league: String,
@@ -23,7 +23,7 @@ const typeDefs = gql`
     type Mutation {
         addPlayer(_id: ID!,
             name: String,
-            imagePath: String!,
+            imageUrl: String!,
             club: String!,
             nationality: String!,
             league: String!,
@@ -66,5 +66,5 @@ const app = express();
 server.applyMiddleware({app});
 
 app.listen({port: 4000}, () =>
-    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+    console.log(`GraphQL Server ready at http://localhost:4000${server.graphqlPath}`)
 );

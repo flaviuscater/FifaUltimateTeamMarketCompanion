@@ -1,15 +1,12 @@
 const mongoose = require('mongoose');
 
-const Positions = Object.freeze({"GK": String, "LB": String, "RB": String, "CM": String,
-    "LW": String,"RW": String, "ST": String});
-
 mongoose.set('useFindAndModify', false);
 
 const PlayerSchema = new mongoose.Schema({
     //futbinId
     _id: String,
     name: String,
-    imagePath: String,
+    imageUrl: String,
     club: String,
     nationality: String,
     league: String,
@@ -23,3 +20,5 @@ const PlayerSchema = new mongoose.Schema({
 
 module.exports = mongoose.model('Player', PlayerSchema);
 
+// userId in path Param on TransferTarget#add, fetch prices on server and return transfer target with price set
+// on frontend page startup, getAllTransferTargets and
