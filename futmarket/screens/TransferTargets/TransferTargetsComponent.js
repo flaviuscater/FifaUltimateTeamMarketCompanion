@@ -6,7 +6,7 @@ import {
     Alert, Image, Button, ImageBackground, TouchableOpacity, ScrollView, TouchableWithoutFeedback, SafeAreaView
 } from "react-native";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
-import playerPriceService from "../../app/service/PlayerPriceService"
+import transferTargetService from "../../app/service/TransferTargetsService"
 import styles from './TransferTargetsComponent.style';
 import Autocomplete from "react-native-autocomplete-input";
 import SearchResultPlayerComponent from "../../app/components/SearchResultPlayerComponent/SearchResultPlayerComponent";
@@ -14,6 +14,7 @@ import SwipeableFlatList from 'react-native-swipeable-list';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ripple from "../../app/components/Ripple";
 import {FontSize, relativeWidth, latinize, compareRating} from "../../app/utils";
+import registerForPushNotificationsAsync from "../../app/service/NotificationService";
 
 class TransferTargetsComponent extends Component {
     constructor(props) {
@@ -41,9 +42,25 @@ class TransferTargetsComponent extends Component {
             this.setState({futPlayers: queryResult});
         });
 
-        this.addFifaPlayer("Lionel Messi", "IF", 95);
-        this.addFifaPlayer("Antoine Griezmann", "IF", 90);
+        transferTargetService.getTransferTargets()
+            .then(userTransferTargets => {
+                console.log(userTransferTargets);
+                userTransferTargets.forEach(u => this.saveTransferTargetPlayerPrices(u));
+                this.setState({
+                    transferTargetPlayers: userTransferTargets,
+                    loading: false,
+                    refreshing: false
+                });
+            });
 
+        // this.addFifaPlayer("Lionel Messi", "IF", 95);
+        // this.addFifaPlayer("Antoine Griezmann", "IF", 90);
+
+        registerForPushNotificationsAsync()
+            .then(response => console.log(JSON.stringify(response)))
+            .catch(function(error) {
+                console.log('Fail to save push token: ' + error.message);
+            });
         //this.updatePlayerPrices();
     }
 
@@ -58,6 +75,7 @@ class TransferTargetsComponent extends Component {
         return futPlayers.filter(futPlayer => latinize(futPlayer.name).search(regex) >= 0);
     }
 
+    // Get player from graphQL, fetch price(optionally), and make a call to save the transfer target
     addFifaPlayer(name, version, rating) {
         // Add Player if not exist already
         if (this.isPlayerPresent(this.state.transferTargetPlayers, name, version, rating)) {
@@ -68,48 +86,43 @@ class TransferTargetsComponent extends Component {
         fifaGraphQLService.getFifaPlayer({name: name, version: version, rating: rating})
             .then(res => {
                 let fifaPlayer = res["data"]["getPlayer"];
-                //console.log(fifaPlayer);
-
-                let futbinId = fifaPlayer["_id"];
-                playerPriceService.getPlayerPrice(futbinId)
-                    .then(response => response.json())
-                    .then(data => {
-                        fifaPlayer.psPlayerPrice = data[futbinId]["prices"]["ps"]["LCPrice"];
-                        fifaPlayer.xboxPlayerPrice = data[futbinId]["prices"]["xbox"]["LCPrice"];
-                        fifaPlayer.pcPlayerPrice = data[futbinId]["prices"]["pc"]["LCPrice"];
-                    })
-                    .catch(error => console.error(error));
-
-                playerPriceService.getHourlyTodayPlayerPrice(futbinId)
-                    .then(data => {
-                        //lowest daily price todo: save the price in an object
-                        fifaPlayer.psDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "ps");
-                        fifaPlayer.xboxDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "xbox");
-                        fifaPlayer.pcDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "pc");
-
-                        //highest todo: save the price in an object
-                        fifaPlayer.psDailyHighestPlayerPrice = playerPriceService.getDailyHighestPlayerPrice(data, "ps");
-                        fifaPlayer.xboxDailyHighestPlayerPrice = playerPriceService.getDailyHighestPlayerPrice(data, "xbox");
-                        fifaPlayer.pcDailyHighestPlayerPrice = playerPriceService.getDailyHighestPlayerPrice(data, "pc");
-
-                    })
-                    .catch(error => console.error(error));
-
-
-                if (res !== null && fifaPlayer !== null) {
-                    this.setState({
-                        transferTargetPlayers: [...this.state.transferTargetPlayers, fifaPlayer],
-                        error: res.error || null,
-                        loading: false,
-                        refreshing: false
+                transferTargetService.addTransferTarget(fifaPlayer)
+                    .then(res => {
+                        if (res !== null && fifaPlayer !== null) {
+                            fifaPlayer = res;
+                            console.log(fifaPlayer);
+                            fifaPlayer = this.saveTransferTargetPlayerPrices(fifaPlayer);
+                            this.setState({
+                                transferTargetPlayers: [...this.state.transferTargetPlayers, fifaPlayer],
+                                error: res.error || null,
+                                loading: false,
+                                refreshing: false
+                            });
+                        }
                     });
-                }
 
             })
             .catch(error => {
                 this.setState({error, loading: false});
             });
 
+    }
+    //old implementation, todo: refactor
+    saveTransferTargetPlayerPrices(fifaPlayer) {
+        fifaPlayer.psPlayerPrice = fifaPlayer.price.psPrice.currentPrice;
+        fifaPlayer.xboxPlayerPrice = fifaPlayer.price.xboxPrice.currentPrice;
+        fifaPlayer.pcPlayerPrice = fifaPlayer.price.pcPrice.currentPrice;
+
+        fifaPlayer.psDailyLowestPlayerPrice = fifaPlayer.price.psPrice.dailyHighestPrice;
+        fifaPlayer.xboxDailyLowestPlayerPrice = fifaPlayer.price.xboxPrice.dailyHighestPrice;
+        fifaPlayer.pcDailyLowestPlayerPrice = fifaPlayer.price.pcPrice.dailyHighestPrice;
+
+        //highest todo: save the price in an object
+        fifaPlayer.psDailyHighestPlayerPrice = fifaPlayer.price.psPrice.dailyHighestPrice;
+        fifaPlayer.xboxDailyHighestPlayerPrice = fifaPlayer.price.xboxPrice.dailyHighestPrice;
+        fifaPlayer.pcDailyHighestPlayerPrice = fifaPlayer.price.pcPrice.dailyHighestPrice;
+
+        return fifaPlayer;
     }
 
     isPlayerPresent(transferTargetPlayers, name, version, rating) {
@@ -206,7 +219,7 @@ class TransferTargetsComponent extends Component {
                             <SearchResultPlayerComponent name={item.name}
                                                          rating={item.rating}
                                                          version={item.version}
-                                                         imagePath={item.imagePath}
+                                                         imageUrl={item.imageUrl}
                                                          addPlayerMethod={this.addFifaPlayer}
                             />
                         )}
@@ -314,11 +327,11 @@ class TransferTargetsComponent extends Component {
                     name: item.name,
                     rating: item.rating,
                     version: item.version,
-                    imagePath: item.imagePath,
+                    imageUrl: item.imageUrl,
                     position: item.position
                 })}>
                     <Image style={styles.profileImage}
-                           source={{uri: item.imagePath}}/>
+                           source={{uri: item.imageUrl}}/>
                 </TouchableOpacity>
 
                 <View style={styles.primaryTextStyle}>
@@ -353,7 +366,7 @@ class TransferTargetsComponent extends Component {
     //         <ListItem
     //             title={`${item.name}`}
     //             subtitle={item.rating.toString()}
-    //             leftAvatar={{source: {uri: item.imagePath}}}
+    //             leftAvatar={{source: {uri: item.imageUrl}}}
     //             rightElement={this.renderPriceItem(item)}
     //         >
     //         </ListItem>

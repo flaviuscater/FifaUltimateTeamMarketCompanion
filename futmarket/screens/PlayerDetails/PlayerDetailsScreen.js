@@ -131,7 +131,7 @@ export default class PlayerDetailsScreen extends Component {
                         <Image
                             style={styles.cardImage}
                             resizeMode="cover"
-                            source={{uri: navigation.getParam('imagePath', '0')}}
+                            source={{uri: navigation.getParam('imageUrl', '0')}}
                         />
                         <Text style={{marginBottom: 10}}>
                             Rating: {navigation.getParam('rating', '0')} {'\n'}
