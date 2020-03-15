@@ -288,6 +288,9 @@ class TransferTargetsComponent extends Component {
                             transferTargetPlayers.splice(index, 1);
                             this.setState({transferTargetPlayers: transferTargetPlayers})
 
+                            // also remove from DB
+                            transferTargetService.deleteTransferTarget(item._id);
+
                         } else {
                             this.swipeableList._onClose()
                         }

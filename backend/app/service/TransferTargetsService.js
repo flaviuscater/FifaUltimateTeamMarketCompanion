@@ -9,15 +9,18 @@ const TransferTargetsService = {
         const userId = req.params.userId;
 
         TransferTargets.findOne({_id: transferTarget._id}, (err, foundTransferTarget) => {
+            // target Found
             if (foundTransferTarget !== undefined && foundTransferTarget !== null && !err) {
                 let userIds = foundTransferTarget.userIds;
+                // if doesn't exist already, add userId in array
                 if (userIds.indexOf(userId) < 0) {
                     userIds.push(userId);
+                    transferTarget.userIds = userIds;
                 }
-                transferTarget.userIds = userIds;
+            } else {
+                transferTarget.userIds = [userId];
             }
 
-            transferTarget.userIds = [userId];
             playerPriceService.constructDailyPlayerPrice(transferTarget._id)
                 .then(playerPrice => {
                     transferTarget.price = playerPrice;
@@ -73,6 +76,34 @@ const TransferTargetsService = {
                 throw new Error(err.message);
             }
         });
+    },
+
+    deleteTransferTargetByUserId: function (req, res) {
+        const userId = req.params.userId;
+        const transferTargetId = req.params.transferTargetId;
+
+        TransferTargets.findOne({_id: transferTargetId}, (err, foundTransferTarget) => {
+            if (foundTransferTarget !== undefined && foundTransferTarget !== null && !err) {
+                let userIds = foundTransferTarget.userIds;
+
+                let idx = userIds.indexOf(userId);
+                // if user Id found then delete id, and update the transferTarget
+                if (userIds.length > 1 && idx > -1) {
+                    userIds.splice(idx, 1);
+                    foundTransferTarget.userIds = userIds;
+                    this.saveTransferTarget(foundTransferTarget)
+                } else { // delete the transferTarget object
+                    TransferTargets.deleteOne({_id: transferTargetId}, (err, deletedTransferTarget) => {
+                        if (err) return res.status(500).send(err);
+                    })
+                }
+                const response = {
+                    message: "Transfer Target successfully deleted",
+                    id: foundTransferTarget._id
+                };
+                return res.status(200).send(response);
+            }
+        })
     }
 };
 
