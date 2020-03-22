@@ -3,7 +3,15 @@ import {
     View,
     Text,
     Picker,
-    Alert, Image, Button, ImageBackground, TouchableOpacity, ScrollView, TouchableWithoutFeedback, SafeAreaView
+    Alert,
+    Image,
+    Button,
+    ImageBackground,
+    TouchableOpacity,
+    ScrollView,
+    TouchableWithoutFeedback,
+    SafeAreaView,
+    RefreshControl
 } from "react-native";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
 import transferTargetService from "../../app/service/TransferTargetsService"
@@ -31,7 +39,7 @@ class TransferTargetsComponent extends Component {
             console: "ps",
             futPlayers: [],
             searchPlayerQuery: '',
-            querySelectedPlayer: {name: "", rating: 0, version: ""}
+            querySelectedPlayer: {name: "", rating: 0, version: ""},
         };
     }
 
@@ -53,12 +61,9 @@ class TransferTargetsComponent extends Component {
                 });
             });
 
-        // this.addFifaPlayer("Lionel Messi", "IF", 95);
-        // this.addFifaPlayer("Antoine Griezmann", "IF", 90);
-
         registerForPushNotificationsAsync()
             .then(response => console.log(JSON.stringify(response)))
-            .catch(function(error) {
+            .catch(function (error) {
                 console.log('Fail to save push token: ' + error.message);
             });
         //this.updatePlayerPrices();
@@ -107,6 +112,7 @@ class TransferTargetsComponent extends Component {
             });
 
     }
+
     //old implementation, todo: refactor
     saveTransferTargetPlayerPrices(fifaPlayer) {
         fifaPlayer.psPlayerPrice = fifaPlayer.price.psPrice.currentPrice;
@@ -176,8 +182,24 @@ class TransferTargetsComponent extends Component {
         return currentPlayer.price;
     }
 
-    // updatePlayerPrices() {
-    // }
+
+    onRefresh = () => {
+        this.setState({refreshing: true});
+        fifaGraphQLService.getAllFutPlayers().then((json) => {
+
+            transferTargetService.getTransferTargets()
+                .then(userTransferTargets => {
+                    console.log(userTransferTargets);
+                    userTransferTargets.forEach(u => this.saveTransferTargetPlayerPrices(u));
+                    this.setState({
+                        transferTargetPlayers: userTransferTargets,
+                        loading: false,
+                        refreshing: false
+                    });
+                });
+        });
+
+    };
 
     render() {
         const {searchPlayerQuery} = this.state;
@@ -230,24 +252,29 @@ class TransferTargetsComponent extends Component {
                     {/*List of displayed players*/}
                     {/*<ScrollView contentContainerStyle={styles.scrollViewContainer}>*/}
                     <SafeAreaView style={styles.scrollViewContainer}>
-                        <SwipeableFlatList
-                            ref={(ref) => {
-                                this.swipeableList = ref
-                            }}
-                            keyExtractor={item => item._id}
-                            width='100%'
-                            bounceFirstRowOnMount={false}
-                            refreshing={true}
-                            removeClippedSubviews={true}
-                            data={this.state.transferTargetPlayers}
-                            extraData={this.state}
-                            maxSwipeDistance={relativeWidth(25)}
-                            ItemSeparatorComponent={this.FlatListItemSeparator}
-                            renderQuickActions={({index, item}) =>
-                                this.renderQuickActionButton(index, item)
-                            }
-                            renderItem={({item}) => this.renderListItem(item)}
-                        />
+                        <ScrollView refreshControl={
+                            <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh}/>
+                        }
+                        >
+                            <SwipeableFlatList
+                                ref={(ref) => {
+                                    this.swipeableList = ref
+                                }}
+                                keyExtractor={item => item._id}
+                                width='100%'
+                                bounceFirstRowOnMount={false}
+                                refreshing={true}
+                                removeClippedSubviews={true}
+                                data={this.state.transferTargetPlayers}
+                                extraData={this.state}
+                                maxSwipeDistance={relativeWidth(25)}
+                                ItemSeparatorComponent={this.FlatListItemSeparator}
+                                renderQuickActions={({index, item}) =>
+                                    this.renderQuickActionButton(index, item)
+                                }
+                                renderItem={({item}) => this.renderListItem(item)}
+                            />
+                        </ScrollView>
                     </SafeAreaView>
                 </View>
             </ImageBackground>
