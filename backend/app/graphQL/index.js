@@ -1,6 +1,5 @@
 const express = require('express');
 const {ApolloServer, gql} = require('apollo-server-express');
-require('../repository/repository');
 
 const Player = require('../models/persistence/Player');
 

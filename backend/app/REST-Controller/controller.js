@@ -6,15 +6,26 @@ const app = express();
 const bodyparser = require("body-parser");
 
 require('../repository/repository');
+require('../graphQL/index');
 
 //Middleware
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended: false}));
 
+// User
 app.post("/user/push-token", ((req, res) => {
     return userService.saveUserPushToken(req, res);
 }));
 
+app.put("/user/console", ((req, res) => {
+    return userService.updateUserConsole(req, res);
+}));
+
+app.get("/user/:userId", ((req, res) => {
+    return userService.getUser(req, res);
+}));
+
+// Transfer Target
 app.post("/transferTargets/user/:userId", ((req, res) => {
     return transferTargetsService.saveTransferTargetByUserId(req, res);
 }));
@@ -28,5 +39,6 @@ app.delete('/transferTargets/:transferTargetId/user/:userId', (req, res) => {
 });
 
 app.listen(4001, () => {
+
     console.log("REST Server running on port 4001");
 });

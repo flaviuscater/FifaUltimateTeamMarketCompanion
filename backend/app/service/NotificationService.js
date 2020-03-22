@@ -7,29 +7,16 @@ let expo = new Expo();
 
 const NotificationService = {
 
-    pushNotifications: async function (userIds, transferTargetDealNotification) {
-        let userTokensPromises = [];
-
-        userIds.forEach( userId => {
-            userTokensPromises.push(
-                User.find({userId: userId.toString()}))
-
+    pushNotifications: async function (users, transferTarget) {
+        let userPushTokens = users.map(user =>{
+            return user[0].pushToken
         });
-
-        await Promise.all(userTokensPromises).then(userTokens => {
-            this.sendBatchNotifications(userTokens, transferTargetDealNotification);
-        });
-
+        this.sendBatchNotifications(userPushTokens, transferTarget);
     },
 
-    sendBatchNotifications(userPushTokens, transferTargetDealNotification) {
+    sendBatchNotifications(userPushTokens, transferTarget) {
         let messages = [];
-        for (let token of userPushTokens) {
-            if (token.length === 0) {
-                console.log("User token not found");
-                continue
-            }
-            let pushToken = token[0].pushToken;
+        for (let pushToken of userPushTokens) {
 
             // Check that all your push tokens appear to be valid Expo push tokens
             if (!Expo.isExpoPushToken(pushToken)) {
@@ -41,8 +28,9 @@ const NotificationService = {
             messages.push({
                 to: pushToken,
                 sound: 'default',
-                body: 'Good deal found: ' + transferTargetDealNotification.transferTarget.name + " " +transferTargetDealNotification.transferTarget.version,
-                data: transferTargetDealNotification,
+                //todo: refactor for the flipping notifications
+                body: 'Lowest price of today: ' + transferTarget.name + " " + transferTarget.version,
+                data: transferTarget,
             })
         }
 
