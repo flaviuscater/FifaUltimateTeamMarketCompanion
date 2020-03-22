@@ -55,6 +55,7 @@ const TransferTargetsService = {
     },
 
     getAllTransferTargetsByUserId: function (req, res) {
+        this.refreshPrices();
         const userId = req.params.userId;
         TransferTargets.find({userIds: userId}, (err, transferTargets) => {
             if (err) {
@@ -104,6 +105,20 @@ const TransferTargetsService = {
                 return res.status(200).send(response);
             }
         })
+    },
+
+    refreshPrices() {
+        this.getAllTransferTargets()
+            .then(r => {
+                r.forEach(async transferTarget => {
+                    await playerPriceService.constructDailyPlayerPrice(transferTarget._id)
+                        .then(playerPrice => {
+                            transferTarget.price = playerPrice;
+                            this.saveTransferTarget(transferTarget);
+                        })
+                });
+                console.log('Refreshed Prices')
+            });
     }
 };
 

@@ -4,8 +4,38 @@ const notificationService = require("../service/NotificationService.js");
 const User = require('../models/persistence/User');
 
 const FindTransferTargetDealsService = {
-//todo: make it happen only on 1 server startup
     refreshTransferTargetsPrices() {
+        setInterval(function () {
+            transferTargetsService.getAllTransferTargets()
+                .then(r => {
+                    r.forEach(async transferTarget => {
+                        await playerPriceService.constructDailyPlayerPrice(transferTarget._id)
+                            .then(playerPrice => {
+                                transferTarget.price = playerPrice;
+                                transferTargetsService.saveTransferTarget(transferTarget);
+                                console.log(transferTarget);
+                                return transferTarget;
+                            })
+                            .then(transferTarget => {
+                                let usersPromises = [];
+
+                                transferTarget.userIds.forEach(userId => {
+                                    usersPromises.push(
+                                        User.find({userId: userId.toString()}))
+                                });
+
+                                Promise.all(usersPromises).then(users => {
+                                    findPs4TransferDeals(users, transferTarget);
+                                    findXboxTransferDeals(users, transferTarget);
+                                    findPcTransferDeals(users, transferTarget);
+                                });
+                            })
+                    })
+                })
+        }, 10 * 10000);
+
+    },
+    findDailyFlipTargets() {
         setInterval(function () {
             transferTargetsService.getAllTransferTargets()
                 .then(r => {
@@ -55,6 +85,7 @@ function findXboxTransferDeals(users, transferTarget) {
         notificationService.pushNotifications(xboxUsers, transferTarget);
     }
 }
+
 function findPcTransferDeals(users, transferTarget) {
     let pcUsers = users.filter(user => "PC" === user[0].console);
 
