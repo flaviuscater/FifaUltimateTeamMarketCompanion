@@ -2,7 +2,7 @@
 const LOCAL_CABLE_URL = 'http://192.168.1.250';
 
 //wifi
-const LOCAL_WIFI_URL = 'http://192.168.1.40';
+const LOCAL_WIFI_URL = 'http://192.168.1.39';
 
 //hotspot
 const LOCAL_HOTSPOT_URL = 'http://192.168.43.116';

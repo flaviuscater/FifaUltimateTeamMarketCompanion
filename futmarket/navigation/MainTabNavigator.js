@@ -4,7 +4,7 @@ import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 
 import TabBarIcon from '../app/components/TabBarIcon';
 import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import SettingsScreen from '../screens/SettingsScreen/SettingsScreen';
 import PlayerDetailsScreen from "../screens/PlayerDetails/PlayerDetailsScreen";
 import TransferTargetsComponent from "../screens/TransferTargets/TransferTargetsComponent";
 

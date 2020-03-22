@@ -137,42 +137,43 @@ class TransferTargetsComponent extends Component {
     }
 
     getCurrentConsolePlayerPrice(futbinId) {
-        let currentPlayer = this.state.transferTargetPlayers.find((element) => {
-            return element['_id'] === futbinId;
-        });
-        if (this.state.console === "ps") {
-            return currentPlayer.psPlayerPrice;
-        } else if (this.state.console === "xbox") {
-            return currentPlayer.xboxPlayerPrice;
+        let currentPlayerPrice = this.getCurrentPlayerPrice(futbinId);
+        if (this.state.console === "PS4") {
+            return currentPlayerPrice.psPrice.currentPrice;
+        } else if (this.state.console === "XBOX") {
+            return currentPlayerPrice.xboxPrice.currentPrice;
         } else {
-            return currentPlayer.pcPlayerPrice;
+            return currentPlayerPrice.pcPrice.currentPrice;
         }
     }
 
     getConsoleDailyLowestPlayerPrice(futbinId) {
-        let currentPlayer = this.state.transferTargetPlayers.find((element) => {
-            return element['_id'] === futbinId;
-        });
-        if (this.state.console === "ps") {
-            return currentPlayer.psDailyLowestPlayerPrice;
-        } else if (this.state.console === "xbox") {
-            return currentPlayer.xboxDailyLowestPlayerPrice;
+        let currentPlayerPrice = this.getCurrentPlayerPrice(futbinId);
+        if (this.state.console === "PS4") {
+            return currentPlayerPrice.psPrice.dailyLowestPrice;
+        } else if (this.state.console === "XBOX") {
+            return currentPlayerPrice.xboxPrice.dailyLowestPrice;
         } else {
-            return currentPlayer.pcDailyLowestPlayerPrice;
+            return currentPlayerPrice.pcPrice.dailyLowestPrice;
         }
     }
 
     getConsoleDailyHighestPlayerPrice(futbinId) {
+        let currentPlayerPrice = this.getCurrentPlayerPrice(futbinId);
+        if (this.state.console === "PS4") {
+            return currentPlayerPrice.psPrice.dailyHighestPrice;
+        } else if (this.state.console === "XBOX") {
+            return currentPlayerPrice.xboxPrice.dailyHighestPrice;
+        } else {
+            return currentPlayerPrice.pcPrice.dailyHighestPrice;
+        }
+    }
+
+    getCurrentPlayerPrice(futbinId) {
         let currentPlayer = this.state.transferTargetPlayers.find((element) => {
             return element['_id'] === futbinId;
         });
-        if (this.state.console === "ps") {
-            return currentPlayer.psDailyHighestPlayerPrice;
-        } else if (this.state.console === "xbox") {
-            return currentPlayer.xboxDailyHighestPlayerPrice;
-        } else {
-            return currentPlayer.pcDailyHighestPlayerPrice;
-        }
+        return currentPlayer.price;
     }
 
     // updatePlayerPrices() {
@@ -200,9 +201,9 @@ class TransferTargetsComponent extends Component {
                             onValueChange={(itemValue, itemIndex) =>
                                 this.setState({console: itemValue})
                             }>
-                        <Picker.Item label="PS" value="ps" color="blue"/>
-                        <Picker.Item label="Xbox" value="xbox" color="green"/>
-                        <Picker.Item label="PC" value="pc" color="orange"/>
+                        <Picker.Item label="PS4" value="PS4" color="blue"/>
+                        <Picker.Item label="Xbox" value="XBOX" color="green"/>
+                        <Picker.Item label="PC" value="PC" color="orange"/>
                     </Picker>
 
                     <Autocomplete

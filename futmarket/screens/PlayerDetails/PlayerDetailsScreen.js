@@ -79,12 +79,12 @@ export default class PlayerDetailsScreen extends Component {
         return pricesArray;
     }
 
-    setCurrentHourlyGraphArray(console) {
-        if (console === "ps") {
+    setCurrentHourlyGraphArray() {
+        if (this.state.console === "ps") {
             this.setState({currentHourlyGraphArray: this.state.psHourlyPriceArray}, function () {
                 this.setState({currentGraphArray: this.state.currentHourlyGraphArray});
             })
-        } else if (console === "xbox") {
+        } else if (this.state.console === "xbox") {
             this.setState({currentHourlyGraphArray: this.state.xboxHourlyPriceArray}, function () {
                 this.setState({currentGraphArray: this.state.currentHourlyGraphArray});
             })
@@ -95,12 +95,12 @@ export default class PlayerDetailsScreen extends Component {
         }
     }
 
-    setCurrentDailyGraphArray(console) {
-        if (console === "ps") {
+    setCurrentDailyGraphArray() {
+        if (this.state.console === "ps") {
             this.setState({currentDailyGraphArray: this.state.psDailyPriceArray}, function () {
                 this.setState({currentGraphArray: this.state.currentDailyGraphArray});
             })
-        } else if (console === "xbox") {
+        } else if (this.state.console === "xbox") {
             this.setState({currentDailyGraphArray: this.state.xboxDailyPriceArray}, function () {
                 this.setState({currentGraphArray: this.state.currentDailyGraphArray});
             })
@@ -157,9 +157,9 @@ export default class PlayerDetailsScreen extends Component {
                         onValueChange={value => {
                             this.setState({toggleButtonValue: value});
                             if (value === "Hourly") {
-                                this.setCurrentHourlyGraphArray(this.state.console);
+                                this.setCurrentHourlyGraphArray();
                             } else if (value === "Daily") {
-                                this.setCurrentDailyGraphArray(this.state.console);
+                                this.setCurrentDailyGraphArray();
                             }
                         }}
                         value={this.state.toggleButtonValue}
