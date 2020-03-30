@@ -52,7 +52,7 @@ class TransferTargetsComponent extends Component {
 
         transferTargetService.getTransferTargets()
             .then(userTransferTargets => {
-                console.log(userTransferTargets);
+                //console.log(userTransferTargets);
                 userTransferTargets.forEach(u => this.saveTransferTargetPlayerPrices(u));
                 this.setState({
                     transferTargetPlayers: userTransferTargets,
@@ -189,7 +189,7 @@ class TransferTargetsComponent extends Component {
 
             transferTargetService.getTransferTargets()
                 .then(userTransferTargets => {
-                    console.log(userTransferTargets);
+                    //console.log(userTransferTargets);
                     userTransferTargets.forEach(u => this.saveTransferTargetPlayerPrices(u));
                     this.setState({
                         transferTargetPlayers: userTransferTargets,

@@ -3,7 +3,7 @@ import {Platform} from 'react-native';
 import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 
 import TabBarIcon from '../app/components/TabBarIcon';
-import LinksScreen from '../screens/LinksScreen';
+import DailyFlipsScreen from '../screens/DailyFlipsScreen/DailyFlipsScreen';
 import SettingsScreen from '../screens/SettingsScreen/SettingsScreen';
 import PlayerDetailsScreen from "../screens/PlayerDetails/PlayerDetailsScreen";
 import TransferTargetsComponent from "../screens/TransferTargets/TransferTargetsComponent";
@@ -39,7 +39,7 @@ HomeStack.path = '';
 
 const LinksStack = createStackNavigator(
     {
-        Links: LinksScreen,
+        Links: DailyFlipsScreen,
     },
     config
 );
