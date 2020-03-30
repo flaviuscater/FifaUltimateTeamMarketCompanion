@@ -32,42 +32,9 @@ const FindTransferTargetDealsService = {
                             })
                     })
                 })
-        }, 10 * 10000);
+        }, 1 * 10000);
 
     },
-    findDailyFlipTargets() {
-        setInterval(function () {
-            transferTargetsService.getAllTransferTargets()
-                .then(r => {
-                    r.forEach(async transferTarget => {
-                        await playerPriceService.constructDailyPlayerPrice(transferTarget._id)
-                            .then(playerPrice => {
-                                transferTarget.price = playerPrice;
-                                transferTargetsService.saveTransferTarget(transferTarget);
-                                console.log(transferTarget);
-                                return transferTarget;
-                            })
-                            .then(transferTarget => {
-                                let usersPromises = [];
-
-                                transferTarget.userIds.forEach(userId => {
-                                    usersPromises.push(
-                                        User.find({userId: userId.toString()}))
-                                });
-
-                                Promise.all(usersPromises).then(users => {
-                                    findPs4TransferDeals(users, transferTarget);
-                                    findXboxTransferDeals(users, transferTarget);
-                                    findPcTransferDeals(users, transferTarget);
-                                });
-                            })
-                    })
-                })
-        }, 5 * 10000);
-
-    },
-
-
 };
 
 function findPs4TransferDeals(users, transferTarget) {

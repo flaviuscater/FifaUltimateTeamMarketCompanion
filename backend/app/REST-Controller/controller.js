@@ -1,5 +1,6 @@
 const userService = require("../service/UserService.js");
 const transferTargetsService = require("../service/TransferTargetsService.js");
+const dailyFlipsService = require("../service/DailyFlipPlayerService.js");
 
 const express = require("express");
 const app = express();
@@ -37,6 +38,13 @@ app.get('/transferTargets/user/:userId', (req, res) => {
 app.delete('/transferTargets/:transferTargetId/user/:userId', (req, res) => {
     return transferTargetsService.deleteTransferTargetByUserId(req, res);
 });
+
+// Daily Flips
+
+app.get('/dailyFlips/:userConsole', (req, res) => {
+    return dailyFlipsService.getAllDailyFlipPlayers(req, res);
+});
+
 
 app.listen(4001, () => {
 

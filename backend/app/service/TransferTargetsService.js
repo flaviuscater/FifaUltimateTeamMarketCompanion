@@ -15,8 +15,8 @@ const TransferTargetsService = {
                 // if doesn't exist already, add userId in array
                 if (userIds.indexOf(userId) < 0) {
                     userIds.push(userId);
-                    transferTarget.userIds = userIds;
                 }
+                transferTarget.userIds = userIds;
             } else {
                 transferTarget.userIds = [userId];
             }
@@ -61,7 +61,7 @@ const TransferTargetsService = {
             if (err) {
                 console.log(err);
                 res.status(500).json({
-                    message: "Error on TransferTarget creation"
+                    message: "Error on TransferTarget fetching"
                 });
             } else {
                 res.json(transferTargets);
@@ -117,7 +117,7 @@ const TransferTargetsService = {
                             this.saveTransferTarget(transferTarget);
                         })
                 });
-                console.log('Refreshed Prices')
+                console.log('Refreshed Transfer targets Prices')
             });
     }
 };
