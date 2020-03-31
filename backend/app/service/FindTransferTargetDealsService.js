@@ -32,7 +32,7 @@ const FindTransferTargetDealsService = {
                             })
                     })
                 })
-        }, 1 * 10000);
+        }, 30 * 10000);
 
     },
 };

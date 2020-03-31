@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm-run-all --parallel start-graphql-server start-rest-server",
-    "start-graphql-server": "node app/graphQL/index.js",
-    "start-rest-server": "node app/REST-Controller/controller.js"
+    "start": "node app/REST-Controller/controller.js"
   },
   "keywords": [],
   "author": "",

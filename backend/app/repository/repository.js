@@ -10,7 +10,7 @@ const url = 'mongodb://localhost:27017/graphqldb';
 mongoose.connect(url);
 mongoose.connection.once('open', () =>{
     console.log(`Connected to mongo at ${url}`);
-    //findTransferTargetDealsService.refreshTransferTargetsPrices();
+    findTransferTargetDealsService.refreshTransferTargetsPrices();
     dailyFlipPlayerService.deleteAllDailyFlipPlayers();
     dailyFlipPlayerService.findDailyFlipTargets();
 });
