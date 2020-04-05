@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         //flex: 1,
         left: 5,
         position: 'absolute',
-        right: '30%',
+        right: '5%',
         top: 5,
         zIndex: 1
     },

@@ -63,6 +63,7 @@ class TransferTargetsComponent extends Component {
 
         registerForPushNotificationsAsync()
             .then(response => console.log(JSON.stringify(response)))
+            // .then(response => console.log(response))
             .catch(function (error) {
                 console.log('Fail to save push token: ' + error.message);
             });
@@ -218,15 +219,15 @@ class TransferTargetsComponent extends Component {
                 }}
             >
                 <View style={styles.MainContainer}>
-                    <Picker style={styles.consolePicker}
-                            selectedValue={this.state.console}
-                            onValueChange={(itemValue, itemIndex) =>
-                                this.setState({console: itemValue})
-                            }>
-                        <Picker.Item label="PS4" value="PS4" color="blue"/>
-                        <Picker.Item label="Xbox" value="XBOX" color="green"/>
-                        <Picker.Item label="PC" value="PC" color="orange"/>
-                    </Picker>
+                    {/*<Picker style={styles.consolePicker}*/}
+                    {/*        selectedValue={this.state.console}*/}
+                    {/*        onValueChange={(itemValue, itemIndex) =>*/}
+                    {/*            this.setState({console: itemValue})*/}
+                    {/*        }>*/}
+                    {/*    <Picker.Item label="PS4" value="PS4" color="blue"/>*/}
+                    {/*    <Picker.Item label="Xbox" value="XBOX" color="green"/>*/}
+                    {/*    <Picker.Item label="PC" value="PC" color="orange"/>*/}
+                    {/*</Picker>*/}
 
                     <Autocomplete
                         autoCapitalize="none"

@@ -13,6 +13,8 @@ import dailyFlipsService from "../../app/service/DailyFlipsService";
 import {FontSize} from "../../app/utils";
 import styles from './DailyFlipsScreen.style';
 import {connect} from "react-redux";
+import UserService from "../../app/service/UserService";
+import {updateConsole} from "../../app/utils/redux/actions/actions";
 
 
 class DailyFlipsScreen extends Component {
@@ -20,7 +22,7 @@ class DailyFlipsScreen extends Component {
     constructor(props) {
         super(props);
 
-        const {userConsole} = this.props;
+        const {userConsole, updateConsole} = this.props;
 
         this.state = {
             loading: false,
@@ -30,6 +32,14 @@ class DailyFlipsScreen extends Component {
     }
 
     componentDidMount() {
+        if (this.props.userConsole === null || this.props.userConsole === undefined) {
+            UserService.getUser()
+                .then(user => {
+                    if (user.console !== null)
+                        this.props.updateConsole(user.console)
+                })
+            //fetch userConsole from backend and update state
+        }
         this.fetchData();
     }
 
@@ -154,8 +164,14 @@ const mapStateToProps = (state) => {
     };
 };
 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateConsole: (console) => dispatch(updateConsole(console)),
+    };
+};
+
 DailyFlipsScreen.navigationOptions = {
     title: 'Daily Flips',
 };
 
-export default connect(mapStateToProps)(DailyFlipsScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(DailyFlipsScreen);
