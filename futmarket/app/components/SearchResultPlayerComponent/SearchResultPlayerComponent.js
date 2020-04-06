@@ -10,7 +10,7 @@ export default class SearchResultPlayerComponent extends Component {
             <View style={styles.container}>
                 <Text>{this.props.name}</Text>
                 <View style={styles.lowerPart}>
-                    <Text>{this.props.rating} {this.props.version} </Text>
+                    <Text>{this.props.rating}</Text>
                     <Image style={{width: 50, height: 50}} source={{uri: this.props.imageUrl}}/>
                     <TouchableOpacity style={styles.button} onPress={() => {
                         this.props.addPlayerMethod(this.props.name, this.props.version, this.props.rating)

@@ -32,28 +32,26 @@ class DailyFlipsScreen extends Component {
     }
 
     componentDidMount() {
-        if (this.props.userConsole === null || this.props.userConsole === undefined) {
-            UserService.getUser()
-                .then(user => {
-                    if (user.console !== null)
-                        this.props.updateConsole(user.console)
-                })
-            //fetch userConsole from backend and update state
-        }
-        this.fetchData();
+        UserService.getUser()
+            .then(user => {
+                if (user.console !== null) {
+                    this.props.updateConsole(user.console)
+                }
+                this.fetchData(user.console);
+            });
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         // Typical usage (don't forget to compare props):
         if (this.props.userConsole !== prevProps.userConsole) {
-            this.fetchData();
+            this.fetchData(this.props.userConsole);
         }
     }
 
-    fetchData() {
-        dailyFlipsService.getDailyFlips(this.props.userConsole)
+    fetchData(userConsole) {
+        dailyFlipsService.getDailyFlips(userConsole)
             .then(dailyFlips => {
-                 //console.log(dailyFlips);
+                //console.log(dailyFlips);
                 this.setState({
                     dailyFlips: dailyFlips,
                     loading: false,
@@ -118,7 +116,7 @@ class DailyFlipsScreen extends Component {
                     <Text style={{fontSize: FontSize.fontXSmall, color: 'black'}}>
                         Recommended Sell price: {this.getRecommendedPlayerSellPrice(item)}
                     </Text>
-                    <Text  style={(this.getPotentialProfit(item) >= 0) ? styles.green : styles.red}>
+                    <Text style={(this.getPotentialProfit(item) >= 0) ? styles.green : styles.red}>
                         Potential profit: {this.getPotentialProfit(item)}
                     </Text>
                 </View>
@@ -148,11 +146,11 @@ class DailyFlipsScreen extends Component {
 
     getPotentialProfit(futPlayer) {
         if (this.props.userConsole === "PS4") {
-            return (futPlayer.price.psPrice.dailyHighestPrice * 0.95) - futPlayer.price.psPrice.currentPrice;
+            return Math.floor(futPlayer.price.psPrice.dailyHighestPrice * 0.95) - futPlayer.price.psPrice.currentPrice;
         } else if (this.props.userConsole === "XBOX") {
-            return (futPlayer.price.xboxPrice.dailyHighestPrice * 0.95) - futPlayer.price.xboxPrice.currentPrice;
+            return Math.floor(futPlayer.price.xboxPrice.dailyHighestPrice * 0.95) - futPlayer.price.xboxPrice.currentPrice;
         } else {
-            return (futPlayer.price.pcPrice.dailyHighestPrice * 0.95) - futPlayer.price.pcPrice.currentPrice;
+            return Math.floor(futPlayer.price.pcPrice.dailyHighestPrice * 0.95) - futPlayer.price.pcPrice.currentPrice;
         }
     }
 

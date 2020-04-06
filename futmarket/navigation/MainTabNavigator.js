@@ -37,21 +37,21 @@ HomeStack.navigationOptions = {
 
 HomeStack.path = '';
 
-const LinksStack = createStackNavigator(
+const DailyFlipsStack = createStackNavigator(
     {
-        Links: DailyFlipsScreen,
+        DailyFlips: DailyFlipsScreen,
     },
     config
 );
 
-LinksStack.navigationOptions = {
-    tabBarLabel: 'Links',
+DailyFlipsStack.navigationOptions = {
+    tabBarLabel: 'Daily Flips',
     tabBarIcon: ({focused}) => (
         <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}/>
     ),
 };
 
-LinksStack.path = '';
+DailyFlipsStack.path = '';
 
 const SettingsStack = createStackNavigator(
     {
@@ -71,7 +71,7 @@ SettingsStack.path = '';
 
 const tabNavigator = createBottomTabNavigator({
     HomeStack,
-    LinksStack,
+    DailyFlipsStack,
     SettingsStack,
 });
 

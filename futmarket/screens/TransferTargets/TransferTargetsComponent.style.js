@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     MainContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 20
+        marginTop: 20,
         // flex: 1,
         // margin: 2
     },
@@ -32,10 +32,10 @@ const styles = StyleSheet.create({
     },
 
     autocompleteContainer: {
-        //flex: 1,
+        // flex: 1,
         left: 5,
         position: 'absolute',
-        right: '5%',
+        right: '30%',
         top: 5,
         zIndex: 1
     },

@@ -219,15 +219,16 @@ class TransferTargetsComponent extends Component {
                 }}
             >
                 <View style={styles.MainContainer}>
-                    {/*<Picker style={styles.consolePicker}*/}
-                    {/*        selectedValue={this.state.console}*/}
-                    {/*        onValueChange={(itemValue, itemIndex) =>*/}
-                    {/*            this.setState({console: itemValue})*/}
-                    {/*        }>*/}
-                    {/*    <Picker.Item label="PS4" value="PS4" color="blue"/>*/}
-                    {/*    <Picker.Item label="Xbox" value="XBOX" color="green"/>*/}
-                    {/*    <Picker.Item label="PC" value="PC" color="orange"/>*/}
-                    {/*</Picker>*/}
+                    <Picker style={styles.consolePicker}
+                            selectedValue={this.state.console}
+                            onValueChange={(itemValue, itemIndex) =>
+                                this.setState({console: itemValue})
+                            }>
+                        <Picker.Item label="PS4" value="PS4" color="blue"/>
+                        <Picker.Item label="Xbox" value="XBOX" color="green"/>
+                        <Picker.Item label="PC" value="PC" color="orange"/>
+                    </Picker>
+
 
                     <Autocomplete
                         autoCapitalize="none"
@@ -240,20 +241,20 @@ class TransferTargetsComponent extends Component {
                         onChangeText={text => this.setState({searchPlayerQuery: text})}
                         placeholder="Enter player name"
                         renderItem={({item}) => (
+                            <SafeAreaView style={styles.scrollViewContainer}>
                             <SearchResultPlayerComponent name={item.name}
                                                          rating={item.rating}
                                                          version={item.version}
                                                          imageUrl={item.imageUrl}
                                                          addPlayerMethod={this.addFifaPlayer}
                             />
+                            </SafeAreaView>
                         )}
                         keyExtractor={item => item._id}
                     />
 
                     {/*List of displayed players*/}
-                    {/*<ScrollView contentContainerStyle={styles.scrollViewContainer}>*/}
-                    <SafeAreaView style={styles.scrollViewContainer}>
-                        <ScrollView refreshControl={
+                        <ScrollView contentContainerStyle={styles.scrollViewContainer} refreshControl={
                             <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh}/>
                         }
                         >
@@ -276,7 +277,6 @@ class TransferTargetsComponent extends Component {
                                 renderItem={({item}) => this.renderListItem(item)}
                             />
                         </ScrollView>
-                    </SafeAreaView>
                 </View>
             </ImageBackground>
 
