@@ -71,7 +71,7 @@ class TransferTargetsComponent extends Component {
     }
 
     findPlayer(searchPlayerQuery) {
-        if (searchPlayerQuery === '') {
+        if (searchPlayerQuery === '' || searchPlayerQuery.length < 2) {
             return [];
         }
 
@@ -231,6 +231,7 @@ class TransferTargetsComponent extends Component {
 
 
                     <Autocomplete
+                        listContainerStyle={{height:futPlayers.length * 70}}
                         autoCapitalize="none"
                         refreshing={true}
                         removeClippedSubviews={true}
@@ -241,14 +242,14 @@ class TransferTargetsComponent extends Component {
                         onChangeText={text => this.setState({searchPlayerQuery: text})}
                         placeholder="Enter player name"
                         renderItem={({item}) => (
-                            <SafeAreaView style={styles.scrollViewContainer}>
+                            <ScrollView contentContainerStyle={styles.scrollViewContainer}>
                             <SearchResultPlayerComponent name={item.name}
                                                          rating={item.rating}
                                                          version={item.version}
                                                          imageUrl={item.imageUrl}
                                                          addPlayerMethod={this.addFifaPlayer}
                             />
-                            </SafeAreaView>
+                            </ScrollView>
                         )}
                         keyExtractor={item => item._id}
                     />

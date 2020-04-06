@@ -4,6 +4,7 @@ import {FontSize, relativeHeight, relativeWidth} from "../../app/utils";
 const styles = StyleSheet.create({
 
     MainContainer: {
+        position: 'absolute',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 20,
