@@ -35,6 +35,8 @@ const styles = StyleSheet.create({
     autocompleteContainer: {
         // flex: 1,
         left: 5,
+        margin: 2,
+        padding: 5,
         position: 'absolute',
         right: '30%',
         top: 5,

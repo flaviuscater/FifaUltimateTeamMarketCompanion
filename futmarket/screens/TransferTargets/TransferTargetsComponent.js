@@ -231,7 +231,7 @@ class TransferTargetsComponent extends Component {
 
 
                     <Autocomplete
-                        listContainerStyle={{height:futPlayers.length * 70}}
+                        listContainerStyle={{height: futPlayers.length * 70}}
                         autoCapitalize="none"
                         refreshing={true}
                         removeClippedSubviews={true}
@@ -243,18 +243,19 @@ class TransferTargetsComponent extends Component {
                         placeholder="Enter player name"
                         renderItem={({item}) => (
                             <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-                            <SearchResultPlayerComponent name={item.name}
-                                                         rating={item.rating}
-                                                         version={item.version}
-                                                         imageUrl={item.imageUrl}
-                                                         addPlayerMethod={this.addFifaPlayer}
-                            />
+                                <SearchResultPlayerComponent name={item.name}
+                                                             rating={item.rating}
+                                                             version={item.version}
+                                                             imageUrl={item.imageUrl}
+                                                             addPlayerMethod={this.addFifaPlayer}
+                                />
                             </ScrollView>
                         )}
                         keyExtractor={item => item._id}
                     />
 
                     {/*List of displayed players*/}
+                    <View style={{height: this.state.transferTargetPlayers.length * 70}}>
                         <ScrollView contentContainerStyle={styles.scrollViewContainer} refreshControl={
                             <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh}/>
                         }
@@ -278,6 +279,7 @@ class TransferTargetsComponent extends Component {
                                 renderItem={({item}) => this.renderListItem(item)}
                             />
                         </ScrollView>
+                    </View>
                 </View>
             </ImageBackground>
 
