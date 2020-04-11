@@ -12,13 +12,28 @@ const styles = StyleSheet.create({
         // margin: 2
     },
 
-    scrollViewContainer: {
+    scrollViewSearchBar: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 5,
         margin: 2,
         borderWidth: 1,
+    },
+    scrollViewTransferList: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 5,
+        margin: 2,
+        borderWidth: 1,
+        // paddingBottom: 20,
+        // position: 'absolute',
+        // top: 0,
+        // left: 0,
+        // right: 0,
+        // bottom: 0
+        // flex: 1
     },
 
     consolePicker: {

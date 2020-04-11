@@ -1,11 +1,8 @@
 import React, {Component} from 'react';
 import {
+    ActivityIndicator,
     FlatList, Image,
     ImageBackground,
-    RefreshControl,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
     Text, TouchableOpacity,
     View
 } from 'react-native';
@@ -32,6 +29,7 @@ class DailyFlipsScreen extends Component {
     }
 
     componentDidMount() {
+        this.setState({loading: true});
         UserService.getUser()
             .then(user => {
                 if (user.console !== null) {
@@ -42,6 +40,7 @@ class DailyFlipsScreen extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        // this.setState({loading: true});
         // Typical usage (don't forget to compare props):
         if (this.props.userConsole !== prevProps.userConsole) {
             this.fetchData(this.props.userConsole);
@@ -71,6 +70,7 @@ class DailyFlipsScreen extends Component {
                     height: null,
                 }}
             >
+                <ActivityIndicator size="large" color="#0000ff" animating={this.state.loading} />
                 <View>
                     <FlatList
                         data={this.state.dailyFlips}

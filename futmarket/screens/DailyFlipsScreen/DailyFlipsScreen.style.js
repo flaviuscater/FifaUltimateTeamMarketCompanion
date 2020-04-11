@@ -11,6 +11,15 @@ const styles = StyleSheet.create({
         // margin: 2
     },
 
+    dailyFlipsFlatList: {
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 5,
+        margin: 2,
+        borderWidth: 1,
+    },
+
     cardContainer: {
         flex: 1,
         flexDirection: 'row',

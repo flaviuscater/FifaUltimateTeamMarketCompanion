@@ -11,7 +11,8 @@ import {
     ScrollView,
     TouchableWithoutFeedback,
     SafeAreaView,
-    RefreshControl
+    RefreshControl,
+    TextInput, ActivityIndicator
 } from "react-native";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
 import transferTargetService from "../../app/service/TransferTargetsService"
@@ -44,6 +45,7 @@ class TransferTargetsComponent extends Component {
     }
 
     componentDidMount() {
+        this.setState({loading: true});
         // use this for update method (FlatList has update on pull prop)
         fifaGraphQLService.getAllFutPlayers().then((json) => {
             const queryResult = json["data"]["getPlayers"];
@@ -83,6 +85,9 @@ class TransferTargetsComponent extends Component {
 
     // Get player from graphQL, fetch price(optionally), and make a call to save the transfer target
     addFifaPlayer(name, version, rating) {
+        this.setState({
+            loading: true,
+        });
         // Add Player if not exist already
         if (this.isPlayerPresent(this.state.transferTargetPlayers, name, version, rating)) {
             console.log("Player already exist:", name, version);
@@ -218,6 +223,7 @@ class TransferTargetsComponent extends Component {
                     height: null,
                 }}
             >
+                <ActivityIndicator size="large" color="#0000ff" animating={this.state.loading} />
                 <View style={styles.MainContainer}>
                     <Picker style={styles.consolePicker}
                             selectedValue={this.state.console}
@@ -231,6 +237,7 @@ class TransferTargetsComponent extends Component {
 
 
                     <Autocomplete
+                        clearButtonMode='always'
                         listContainerStyle={{height: futPlayers.length * 70}}
                         autoCapitalize="none"
                         refreshing={true}
@@ -242,7 +249,7 @@ class TransferTargetsComponent extends Component {
                         onChangeText={text => this.setState({searchPlayerQuery: text})}
                         placeholder="Enter player name"
                         renderItem={({item}) => (
-                            <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+                            <ScrollView contentContainerStyle={styles.scrollViewSearchBar}>
                                 <SearchResultPlayerComponent name={item.name}
                                                              rating={item.rating}
                                                              version={item.version}
@@ -255,8 +262,8 @@ class TransferTargetsComponent extends Component {
                     />
 
                     {/*List of displayed players*/}
-                    <View style={{height: this.state.transferTargetPlayers.length * 70}}>
-                        <ScrollView contentContainerStyle={styles.scrollViewContainer} refreshControl={
+                    <View style={{height: 10 * 50}}>
+                        <ScrollView contentContainerStyle={styles.scrollViewTransferList} style={{flex: 1}} refreshControl={
                             <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh}/>
                         }
                         >
@@ -303,7 +310,7 @@ class TransferTargetsComponent extends Component {
     showAlert = (index, item) => {
         this.swipeableList._onClose();
         Alert.alert(
-            'Delete User',
+            'Delete Transfer Target',
             `Are you sure you want to delete ${item.name}?`,
             [
                 {
