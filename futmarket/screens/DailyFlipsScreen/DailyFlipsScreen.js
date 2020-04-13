@@ -13,7 +13,6 @@ import {connect} from "react-redux";
 import UserService from "../../app/service/UserService";
 import {updateConsole} from "../../app/utils/redux/actions/actions";
 
-
 class DailyFlipsScreen extends Component {
 
     constructor(props) {
@@ -40,14 +39,15 @@ class DailyFlipsScreen extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        // this.setState({loading: true});
         // Typical usage (don't forget to compare props):
         if (this.props.userConsole !== prevProps.userConsole) {
+            console.log("Refreshing Daily Flips");
             this.fetchData(this.props.userConsole);
         }
     }
 
     fetchData(userConsole) {
+        this.setState({refreshing: true});
         dailyFlipsService.getDailyFlips(userConsole)
             .then(dailyFlips => {
                 //console.log(dailyFlips);
@@ -58,6 +58,10 @@ class DailyFlipsScreen extends Component {
                 });
             });
     }
+
+    onRefresh = () => {
+        this.fetchData(this.props.userConsole);
+    };
 
     render() {
         // const {console} = this.props;
@@ -70,13 +74,16 @@ class DailyFlipsScreen extends Component {
                     height: null,
                 }}
             >
-                <ActivityIndicator size="large" color="#0000ff" animating={this.state.loading} />
-                <View>
-                    <FlatList
-                        data={this.state.dailyFlips}
-                        renderItem={({item}) => this.renderListItem(item)}
-                        keyExtractor={item => item._id}
-                    />
+                <ActivityIndicator size="large" color="#0000ff" animating={this.state.loading}/>
+                <View style={{height: 10 * 50}}>
+                        <FlatList
+                            contentContainerStyle={styles.dailyFlipsFlatList}
+                            onRefresh={this.onRefresh}
+                            refreshing={this.state.refreshing}
+                            data={this.state.dailyFlips}
+                            renderItem={({item}) => this.renderListItem(item)}
+                            keyExtractor={item => item._id}
+                        />
                 </View>
             </ImageBackground>
         );

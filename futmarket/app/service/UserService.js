@@ -2,15 +2,14 @@ import ApiConstants from "../../constants/ApiConstants";
 import Constants from "expo-constants";
 
 const UserService = {
-
-    updateUserConsole: function (userConsole) {
-        return fetch(ApiConstants.API_REST_SERVER_BASE_PATH + "/user/console/", {
+    updateUser: function (updateUserRequest) {
+        return fetch(ApiConstants.API_REST_SERVER_BASE_PATH + "/user", {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(userConsole)
+            body: JSON.stringify(updateUserRequest)
         })
             .then(res => res.json())
         //.then(res => console.log(res));

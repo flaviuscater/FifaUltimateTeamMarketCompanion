@@ -12,7 +12,7 @@ import {
     TouchableWithoutFeedback,
     SafeAreaView,
     RefreshControl,
-    TextInput, ActivityIndicator
+    TextInput, ActivityIndicator, TouchableHighlight
 } from "react-native";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
 import transferTargetService from "../../app/service/TransferTargetsService"
@@ -24,6 +24,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ripple from "../../app/components/Ripple";
 import {FontSize, relativeWidth, latinize, compareRating} from "../../app/utils";
 import registerForPushNotificationsAsync from "../../app/service/NotificationService";
+import {Tooltip} from "react-native-elements";
+import Popover from "react-native-popover-view";
 
 class TransferTargetsComponent extends Component {
     constructor(props) {
@@ -41,6 +43,7 @@ class TransferTargetsComponent extends Component {
             futPlayers: [],
             searchPlayerQuery: '',
             querySelectedPlayer: {name: "", rating: 0, version: ""},
+            isPopOverVisible: true
         };
     }
 
@@ -223,7 +226,7 @@ class TransferTargetsComponent extends Component {
                     height: null,
                 }}
             >
-                <ActivityIndicator size="large" color="#0000ff" animating={this.state.loading} />
+                <ActivityIndicator size="large" color="#0000ff" animating={this.state.loading}/>
                 <View style={styles.MainContainer}>
                     <Picker style={styles.consolePicker}
                             selectedValue={this.state.console}
@@ -263,9 +266,10 @@ class TransferTargetsComponent extends Component {
 
                     {/*List of displayed players*/}
                     <View style={{height: 10 * 50}}>
-                        <ScrollView contentContainerStyle={styles.scrollViewTransferList} style={{flex: 1}} refreshControl={
-                            <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh}/>
-                        }
+                        <ScrollView contentContainerStyle={styles.scrollViewTransferList} style={{flex: 1}}
+                                    refreshControl={
+                                        <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh}/>
+                                    }
                         >
                             <SwipeableFlatList
                                 ref={(ref) => {
@@ -402,6 +406,14 @@ class TransferTargetsComponent extends Component {
             </View>
         )
     };
+
+    showPopover() {
+        this.setState({isPopOverVisible: true});
+    }
+
+    closePopover() {
+        this.setState({isPopOverVisible: false});
+    }
 
     // renderListItemOld = (item) => {
     //     return (

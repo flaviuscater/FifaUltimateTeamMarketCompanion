@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
     dailyFlipsFlatList: {
         flexDirection: 'column',
         justifyContent: 'space-between',
-        alignItems: 'center',
         padding: 5,
         margin: 2,
         borderWidth: 1,

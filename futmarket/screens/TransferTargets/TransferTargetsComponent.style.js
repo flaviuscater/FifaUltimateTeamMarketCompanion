@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 import {FontSize, relativeHeight, relativeWidth} from "../../app/utils";
 
 const styles = StyleSheet.create({
@@ -114,6 +114,16 @@ const styles = StyleSheet.create({
     pricesTextStyle: {
         flex: 2,
         justifyContent: 'flex-end'
+    },
+    popOverButton: {
+        borderRadius: 4,
+        padding: 10,
+        marginLeft: 10,
+        marginRight: 10,
+        backgroundColor: '#ccc',
+        borderColor: '#333',
+        borderWidth: 1,
+
     }
 
 });
