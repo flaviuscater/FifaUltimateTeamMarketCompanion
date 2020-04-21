@@ -118,10 +118,10 @@ class DailyFlipsScreen extends Component {
 
                 <View style={styles.pricesTextStyle}>
                     <Text style={{fontSize: FontSize.fontXSmall, color: 'black'}}>
-                        Recommended Buy price: {this.getRecommendedPlayerBuyPrice(item)}
+                        Buy price: {this.getRecommendedPlayerBuyPrice(item)}
                     </Text>
                     <Text style={{fontSize: FontSize.fontXSmall, color: 'black'}}>
-                        Recommended Sell price: {this.getRecommendedPlayerSellPrice(item)}
+                        Sell price: {this.getRecommendedPlayerSellPrice(item)}
                     </Text>
                     <Text style={(this.getPotentialProfit(item) >= 0) ? styles.green : styles.red}>
                         Potential profit: {this.getPotentialProfit(item)}

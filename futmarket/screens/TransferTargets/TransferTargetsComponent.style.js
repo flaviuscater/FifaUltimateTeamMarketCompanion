@@ -4,10 +4,10 @@ import {FontSize, relativeHeight, relativeWidth} from "../../app/utils";
 const styles = StyleSheet.create({
 
     MainContainer: {
-        position: 'absolute',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
+        // position: 'absolute',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // marginTop: 20,
         // flex: 1,
         // margin: 2
     },
@@ -20,20 +20,14 @@ const styles = StyleSheet.create({
         margin: 2,
         borderWidth: 1,
     },
-    scrollViewTransferList: {
+    swipeableTransferList: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 5,
         margin: 2,
         borderWidth: 1,
-        // paddingBottom: 20,
-        // position: 'absolute',
-        // top: 0,
-        // left: 0,
-        // right: 0,
-        // bottom: 0
-        // flex: 1
+        height: 10 * 45
     },
 
     consolePicker: {

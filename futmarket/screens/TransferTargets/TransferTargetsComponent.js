@@ -5,14 +5,10 @@ import {
     Picker,
     Alert,
     Image,
-    Button,
     ImageBackground,
     TouchableOpacity,
     ScrollView,
-    TouchableWithoutFeedback,
-    SafeAreaView,
-    RefreshControl,
-    TextInput, ActivityIndicator, TouchableHighlight
+    ActivityIndicator,
 } from "react-native";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
 import transferTargetService from "../../app/service/TransferTargetsService"
@@ -24,8 +20,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ripple from "../../app/components/Ripple";
 import {FontSize, relativeWidth, latinize, compareRating} from "../../app/utils";
 import registerForPushNotificationsAsync from "../../app/service/NotificationService";
-import {Tooltip} from "react-native-elements";
-import Popover from "react-native-popover-view";
 
 class TransferTargetsComponent extends Component {
     constructor(props) {
@@ -265,31 +259,27 @@ class TransferTargetsComponent extends Component {
                     />
 
                     {/*List of displayed players*/}
-                    <View style={{height: 10 * 50}}>
-                        <ScrollView contentContainerStyle={styles.scrollViewTransferList} style={{flex: 1}}
-                                    refreshControl={
-                                        <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh}/>
-                                    }
-                        >
-                            <SwipeableFlatList
-                                ref={(ref) => {
-                                    this.swipeableList = ref
-                                }}
-                                keyExtractor={item => item._id}
-                                width='100%'
-                                bounceFirstRowOnMount={false}
-                                refreshing={true}
-                                removeClippedSubviews={true}
-                                data={this.state.transferTargetPlayers}
-                                extraData={this.state}
-                                maxSwipeDistance={relativeWidth(25)}
-                                ItemSeparatorComponent={this.FlatListItemSeparator}
-                                renderQuickActions={({index, item}) =>
-                                    this.renderQuickActionButton(index, item)
-                                }
-                                renderItem={({item}) => this.renderListItem(item)}
-                            />
-                        </ScrollView>
+                    <View style={styles.swipeableTransferList}>
+                        <SwipeableFlatList
+                            // contentContainerStyle={styles.swipeableTransferList}
+                            ref={(ref) => {
+                                this.swipeableList = ref
+                            }}
+                            keyExtractor={item => item._id}
+                            width='100%'
+                            bounceFirstRowOnMount={false}
+                            onRefresh={this.onRefresh}
+                            refreshing={this.state.refreshing}
+                            removeClippedSubviews={true}
+                            data={this.state.transferTargetPlayers}
+                            extraData={this.state}
+                            maxSwipeDistance={relativeWidth(25)}
+                            ItemSeparatorComponent={this.FlatListItemSeparator}
+                            renderQuickActions={({index, item}) =>
+                                this.renderQuickActionButton(index, item)
+                            }
+                            renderItem={({item}) => this.renderListItem(item)}
+                        />
                     </View>
                 </View>
             </ImageBackground>
