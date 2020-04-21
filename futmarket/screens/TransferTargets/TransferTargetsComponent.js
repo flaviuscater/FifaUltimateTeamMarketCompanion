@@ -20,6 +20,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ripple from "../../app/components/Ripple";
 import {FontSize, relativeWidth, latinize, compareRating} from "../../app/utils";
 import registerForPushNotificationsAsync from "../../app/service/NotificationService";
+import ApiConstants from "../../constants/ApiConstants"
 
 class TransferTargetsComponent extends Component {
     constructor(props) {
@@ -82,6 +83,12 @@ class TransferTargetsComponent extends Component {
 
     // Get player from graphQL, fetch price(optionally), and make a call to save the transfer target
     addFifaPlayer(name, version, rating) {
+        // check list size
+        if (this.state.transferTargetPlayers.length >= ApiConstants.TRANSFER_TARGET_LIST_MAX_SIZE) {
+            this.fullListAlert();
+            return;
+        }
+
         this.setState({
             loading: true,
         });
@@ -281,6 +288,7 @@ class TransferTargetsComponent extends Component {
                             renderItem={({item}) => this.renderListItem(item)}
                         />
                     </View>
+                    <Text style={{color: 'white', margin: 2, padding: 5}}>Transfer Targets size: {this.state.transferTargetPlayers.length} / {ApiConstants.TRANSFER_TARGET_LIST_MAX_SIZE}</Text>
                 </View>
             </ImageBackground>
 
@@ -394,6 +402,18 @@ class TransferTargetsComponent extends Component {
                     </Text>
                 </View>
             </View>
+        )
+    };
+    fullListAlert = (index, item) => {
+        Alert.alert(
+            'Transfer Target List is full',
+            `You can clear up space by sliding left on a player and press the delete button.`,
+            [
+                {
+                    text: 'Ok',
+                    onPress: () => {
+                    }
+                }]
         )
     };
 
