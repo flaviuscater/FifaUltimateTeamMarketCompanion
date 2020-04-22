@@ -8,7 +8,7 @@ import {
     ImageBackground,
     TouchableOpacity,
     ScrollView,
-    ActivityIndicator,
+    ActivityIndicator, TextInput,
 } from "react-native";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
 import transferTargetService from "../../app/service/TransferTargetsService"
@@ -16,11 +16,11 @@ import styles from './TransferTargetsComponent.style';
 import Autocomplete from "react-native-autocomplete-input";
 import SearchResultPlayerComponent from "../../app/components/SearchResultPlayerComponent/SearchResultPlayerComponent";
 import SwipeableFlatList from 'react-native-swipeable-list';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ripple from "../../app/components/Ripple";
 import {FontSize, relativeWidth, latinize, compareRating} from "../../app/utils";
 import registerForPushNotificationsAsync from "../../app/service/NotificationService";
 import ApiConstants from "../../constants/ApiConstants"
+import Icon from 'react-native-vector-icons/Entypo';
 
 class TransferTargetsComponent extends Component {
     constructor(props) {
@@ -192,6 +192,10 @@ class TransferTargetsComponent extends Component {
         return currentPlayer.price;
     }
 
+    renderInput = props => (
+        <TextInput {...props} ref={component => this._textInput = component}/>
+    );
+
 
     onRefresh = () => {
         this.setState({refreshing: true});
@@ -229,41 +233,66 @@ class TransferTargetsComponent extends Component {
             >
                 <ActivityIndicator size="large" color="#0000ff" animating={this.state.loading}/>
                 <View style={styles.MainContainer}>
-                    <Picker style={styles.consolePicker}
-                            selectedValue={this.state.console}
-                            onValueChange={(itemValue, itemIndex) =>
-                                this.setState({console: itemValue})
-                            }>
-                        <Picker.Item label="PS4" value="PS4" color="blue"/>
-                        <Picker.Item label="Xbox" value="XBOX" color="green"/>
-                        <Picker.Item label="PC" value="PC" color="orange"/>
-                    </Picker>
+                    <View>
+                        <Picker style={styles.consolePicker}
+                                selectedValue={this.state.console}
+                                onValueChange={(itemValue, itemIndex) =>
+                                    this.setState({console: itemValue})
+                                }>
+                            <Picker.Item label="PS4" value="PS4" color="blue"/>
+                            <Picker.Item label="Xbox" value="XBOX" color="green"/>
+                            <Picker.Item label="PC" value="PC" color="orange"/>
+                        </Picker>
 
+                        <Autocomplete
+                            renderTextInput={this.renderInput}
+                            clearButtonMode={'always'}
+                            listContainerStyle={{height: futPlayers.length * 70}}
+                            autoCapitalize="none"
+                            ref={input => {
+                                this.textInput = input
+                            }}
+                            refreshing={true}
+                            removeClippedSubviews={true}
+                            autoCorrect={false}
+                            containerStyle={styles.autocompleteContainer}
+                            data={futPlayers.length === 1 && comp(searchPlayerQuery, futPlayers[0].name) ? [] : futPlayers}
+                            defaultValue={searchPlayerQuery}
+                            onChangeText={text => this.setState({searchPlayerQuery: text})}
+                            placeholder="Enter player name"
+                            renderItem={({item}) => (
+                                <ScrollView contentContainerStyle={styles.scrollViewSearchBar}>
+                                    <SearchResultPlayerComponent name={item.name}
+                                                                 rating={item.rating}
+                                                                 version={item.version}
+                                                                 imageUrl={item.imageUrl}
+                                                                 addPlayerMethod={this.addFifaPlayer}
+                                    />
+                                </ScrollView>
+                            )}
+                            keyExtractor={item => item._id}
+                        />
 
-                    <Autocomplete
-                        clearButtonMode='always'
-                        listContainerStyle={{height: futPlayers.length * 70}}
-                        autoCapitalize="none"
-                        refreshing={true}
-                        removeClippedSubviews={true}
-                        autoCorrect={false}
-                        containerStyle={styles.autocompleteContainer}
-                        data={futPlayers.length === 1 && comp(searchPlayerQuery, futPlayers[0].name) ? [] : futPlayers}
-                        defaultValue={searchPlayerQuery}
-                        onChangeText={text => this.setState({searchPlayerQuery: text})}
-                        placeholder="Enter player name"
-                        renderItem={({item}) => (
-                            <ScrollView contentContainerStyle={styles.scrollViewSearchBar}>
-                                <SearchResultPlayerComponent name={item.name}
-                                                             rating={item.rating}
-                                                             version={item.version}
-                                                             imageUrl={item.imageUrl}
-                                                             addPlayerMethod={this.addFifaPlayer}
+                        <View style={{
+                            zIndex: 2,
+                            alignSelf: 'flex-end',
+                            alignItems: 'center',
+                            marginTop: 14,
+                            marginRight: 10
+                        }}>
+                            <TouchableOpacity onPress={() => {
+                                this.setState({searchPlayerQuery: ''});
+                                this._textInput.setNativeProps({text: ''});
+                            }}>
+                                <Icon
+                                    name='circle-with-cross'
+                                    type='entypo'
+                                    size={30}
+                                    color='white'
                                 />
-                            </ScrollView>
-                        )}
-                        keyExtractor={item => item._id}
-                    />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
 
                     {/*List of displayed players*/}
                     <View style={styles.swipeableTransferList}>
@@ -288,7 +317,8 @@ class TransferTargetsComponent extends Component {
                             renderItem={({item}) => this.renderListItem(item)}
                         />
                     </View>
-                    <Text style={{color: 'white', margin: 2, padding: 5}}>Transfer Targets size: {this.state.transferTargetPlayers.length} / {ApiConstants.TRANSFER_TARGET_LIST_MAX_SIZE}</Text>
+                    <Text style={{color: 'white', margin: 2, padding: 5}}>Transfer Targets
+                        size: {this.state.transferTargetPlayers.length} / {ApiConstants.TRANSFER_TARGET_LIST_MAX_SIZE}</Text>
                 </View>
             </ImageBackground>
 
@@ -351,7 +381,7 @@ class TransferTargetsComponent extends Component {
                         this.showAlert(index, item);
                     }} style={styles.quickActionButtonStyle}>
                     <Icon
-                        name={'delete'}
+                        name={'trash'}
                         color={'white'}
                         size={25}/>
                     <Text

@@ -64,7 +64,7 @@ class SettingsScreen extends Component {
                     />
                     <SettingsDividerShort />
                     <SettingsSwitch
-                        title={"Allow Push Notifications"}
+                        title={"Allow Push Notifications (Transfer targets)"}
                         onValueChange={value => {
                             console.log("allow push notifications:", value);
                             this.setState({
