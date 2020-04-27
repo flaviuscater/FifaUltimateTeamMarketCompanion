@@ -3,17 +3,24 @@ import {
     View,
     Text,
     Picker,
-    Alert, Image, Button, ImageBackground, TouchableOpacity, ScrollView, TouchableWithoutFeedback, SafeAreaView
+    Alert,
+    Image,
+    ImageBackground,
+    TouchableOpacity,
+    ScrollView,
+    ActivityIndicator, TextInput,
 } from "react-native";
 import fifaGraphQLService from "../../app/service/FifaGraphQLService"
-import playerPriceService from "../../app/service/PlayerPriceService"
+import transferTargetService from "../../app/service/TransferTargetsService"
 import styles from './TransferTargetsComponent.style';
 import Autocomplete from "react-native-autocomplete-input";
 import SearchResultPlayerComponent from "../../app/components/SearchResultPlayerComponent/SearchResultPlayerComponent";
 import SwipeableFlatList from 'react-native-swipeable-list';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ripple from "../../app/components/Ripple";
 import {FontSize, relativeWidth, latinize, compareRating} from "../../app/utils";
+import registerForPushNotificationsAsync from "../../app/service/NotificationService";
+import ApiConstants from "../../constants/ApiConstants"
+import Icon from 'react-native-vector-icons/Entypo';
 
 class TransferTargetsComponent extends Component {
     constructor(props) {
@@ -30,25 +37,41 @@ class TransferTargetsComponent extends Component {
             console: "ps",
             futPlayers: [],
             searchPlayerQuery: '',
-            querySelectedPlayer: {name: "", rating: 0, version: ""}
+            querySelectedPlayer: {name: "", rating: 0, version: ""},
+            isPopOverVisible: true
         };
     }
 
     componentDidMount() {
+        this.setState({loading: true});
         // use this for update method (FlatList has update on pull prop)
         fifaGraphQLService.getAllFutPlayers().then((json) => {
             const queryResult = json["data"]["getPlayers"];
             this.setState({futPlayers: queryResult});
         });
 
-        this.addFifaPlayer("Lionel Messi", "IF", 95);
-        this.addFifaPlayer("Antoine Griezmann", "IF", 90);
+        transferTargetService.getTransferTargets()
+            .then(userTransferTargets => {
+                //console.log(userTransferTargets);
+                userTransferTargets.forEach(u => this.saveTransferTargetPlayerPrices(u));
+                this.setState({
+                    transferTargetPlayers: userTransferTargets,
+                    loading: false,
+                    refreshing: false
+                });
+            });
 
+        registerForPushNotificationsAsync()
+            .then(response => console.log(JSON.stringify(response)))
+            // .then(response => console.log(response))
+            .catch(function (error) {
+                console.log('Fail to save push token: ' + error.message);
+            });
         //this.updatePlayerPrices();
     }
 
     findPlayer(searchPlayerQuery) {
-        if (searchPlayerQuery === '') {
+        if (searchPlayerQuery === '' || searchPlayerQuery.length < 2) {
             return [];
         }
 
@@ -58,7 +81,17 @@ class TransferTargetsComponent extends Component {
         return futPlayers.filter(futPlayer => latinize(futPlayer.name).search(regex) >= 0);
     }
 
+    // Get player from graphQL, fetch price(optionally), and make a call to save the transfer target
     addFifaPlayer(name, version, rating) {
+        // check list size
+        if (this.state.transferTargetPlayers.length >= ApiConstants.TRANSFER_TARGET_LIST_MAX_SIZE) {
+            this.fullListAlert();
+            return;
+        }
+
+        this.setState({
+            loading: true,
+        });
         // Add Player if not exist already
         if (this.isPlayerPresent(this.state.transferTargetPlayers, name, version, rating)) {
             console.log("Player already exist:", name, version);
@@ -68,48 +101,44 @@ class TransferTargetsComponent extends Component {
         fifaGraphQLService.getFifaPlayer({name: name, version: version, rating: rating})
             .then(res => {
                 let fifaPlayer = res["data"]["getPlayer"];
-                //console.log(fifaPlayer);
-
-                let futbinId = fifaPlayer["_id"];
-                playerPriceService.getPlayerPrice(futbinId)
-                    .then(response => response.json())
-                    .then(data => {
-                        fifaPlayer.psPlayerPrice = data[futbinId]["prices"]["ps"]["LCPrice"];
-                        fifaPlayer.xboxPlayerPrice = data[futbinId]["prices"]["xbox"]["LCPrice"];
-                        fifaPlayer.pcPlayerPrice = data[futbinId]["prices"]["pc"]["LCPrice"];
-                    })
-                    .catch(error => console.error(error));
-
-                playerPriceService.getHourlyTodayPlayerPrice(futbinId)
-                    .then(data => {
-                        //lowest daily price todo: save the price in an object
-                        fifaPlayer.psDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "ps");
-                        fifaPlayer.xboxDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "xbox");
-                        fifaPlayer.pcDailyLowestPlayerPrice = playerPriceService.getDailyLowestPlayerPrice(data, "pc");
-
-                        //highest todo: save the price in an object
-                        fifaPlayer.psDailyHighestPlayerPrice = playerPriceService.getDailyHighestPlayerPrice(data, "ps");
-                        fifaPlayer.xboxDailyHighestPlayerPrice = playerPriceService.getDailyHighestPlayerPrice(data, "xbox");
-                        fifaPlayer.pcDailyHighestPlayerPrice = playerPriceService.getDailyHighestPlayerPrice(data, "pc");
-
-                    })
-                    .catch(error => console.error(error));
-
-
-                if (res !== null && fifaPlayer !== null) {
-                    this.setState({
-                        transferTargetPlayers: [...this.state.transferTargetPlayers, fifaPlayer],
-                        error: res.error || null,
-                        loading: false,
-                        refreshing: false
+                transferTargetService.addTransferTarget(fifaPlayer)
+                    .then(res => {
+                        if (res !== null && fifaPlayer !== null) {
+                            fifaPlayer = res;
+                            console.log(fifaPlayer);
+                            fifaPlayer = this.saveTransferTargetPlayerPrices(fifaPlayer);
+                            this.setState({
+                                transferTargetPlayers: [...this.state.transferTargetPlayers, fifaPlayer],
+                                error: res.error || null,
+                                loading: false,
+                                refreshing: false
+                            });
+                        }
                     });
-                }
 
             })
             .catch(error => {
                 this.setState({error, loading: false});
             });
 
+    }
+
+    //old implementation, todo: refactor
+    saveTransferTargetPlayerPrices(fifaPlayer) {
+        fifaPlayer.psPlayerPrice = fifaPlayer.price.psPrice.currentPrice;
+        fifaPlayer.xboxPlayerPrice = fifaPlayer.price.xboxPrice.currentPrice;
+        fifaPlayer.pcPlayerPrice = fifaPlayer.price.pcPrice.currentPrice;
+
+        fifaPlayer.psDailyLowestPlayerPrice = fifaPlayer.price.psPrice.dailyHighestPrice;
+        fifaPlayer.xboxDailyLowestPlayerPrice = fifaPlayer.price.xboxPrice.dailyHighestPrice;
+        fifaPlayer.pcDailyLowestPlayerPrice = fifaPlayer.price.pcPrice.dailyHighestPrice;
+
+        //highest todo: save the price in an object
+        fifaPlayer.psDailyHighestPlayerPrice = fifaPlayer.price.psPrice.dailyHighestPrice;
+        fifaPlayer.xboxDailyHighestPlayerPrice = fifaPlayer.price.xboxPrice.dailyHighestPrice;
+        fifaPlayer.pcDailyHighestPlayerPrice = fifaPlayer.price.pcPrice.dailyHighestPrice;
+
+        return fifaPlayer;
     }
 
     isPlayerPresent(transferTargetPlayers, name, version, rating) {
@@ -124,46 +153,67 @@ class TransferTargetsComponent extends Component {
     }
 
     getCurrentConsolePlayerPrice(futbinId) {
-        let currentPlayer = this.state.transferTargetPlayers.find((element) => {
-            return element['_id'] === futbinId;
-        });
-        if (this.state.console === "ps") {
-            return currentPlayer.psPlayerPrice;
-        } else if (this.state.console === "xbox") {
-            return currentPlayer.xboxPlayerPrice;
+        let currentPlayerPrice = this.getCurrentPlayerPrice(futbinId);
+        if (this.state.console === "PS4") {
+            return currentPlayerPrice.psPrice.currentPrice;
+        } else if (this.state.console === "XBOX") {
+            return currentPlayerPrice.xboxPrice.currentPrice;
         } else {
-            return currentPlayer.pcPlayerPrice;
+            return currentPlayerPrice.pcPrice.currentPrice;
         }
     }
 
     getConsoleDailyLowestPlayerPrice(futbinId) {
-        let currentPlayer = this.state.transferTargetPlayers.find((element) => {
-            return element['_id'] === futbinId;
-        });
-        if (this.state.console === "ps") {
-            return currentPlayer.psDailyLowestPlayerPrice;
-        } else if (this.state.console === "xbox") {
-            return currentPlayer.xboxDailyLowestPlayerPrice;
+        let currentPlayerPrice = this.getCurrentPlayerPrice(futbinId);
+        if (this.state.console === "PS4") {
+            return currentPlayerPrice.psPrice.dailyLowestPrice;
+        } else if (this.state.console === "XBOX") {
+            return currentPlayerPrice.xboxPrice.dailyLowestPrice;
         } else {
-            return currentPlayer.pcDailyLowestPlayerPrice;
+            return currentPlayerPrice.pcPrice.dailyLowestPrice;
         }
     }
 
     getConsoleDailyHighestPlayerPrice(futbinId) {
-        let currentPlayer = this.state.transferTargetPlayers.find((element) => {
-            return element['_id'] === futbinId;
-        });
-        if (this.state.console === "ps") {
-            return currentPlayer.psDailyHighestPlayerPrice;
-        } else if (this.state.console === "xbox") {
-            return currentPlayer.xboxDailyHighestPlayerPrice;
+        let currentPlayerPrice = this.getCurrentPlayerPrice(futbinId);
+        if (this.state.console === "PS4") {
+            return currentPlayerPrice.psPrice.dailyHighestPrice;
+        } else if (this.state.console === "XBOX") {
+            return currentPlayerPrice.xboxPrice.dailyHighestPrice;
         } else {
-            return currentPlayer.pcDailyHighestPlayerPrice;
+            return currentPlayerPrice.pcPrice.dailyHighestPrice;
         }
     }
 
-    // updatePlayerPrices() {
-    // }
+    getCurrentPlayerPrice(futbinId) {
+        let currentPlayer = this.state.transferTargetPlayers.find((element) => {
+            return element['_id'] === futbinId;
+        });
+        return currentPlayer.price;
+    }
+
+    renderInput = props => (
+        <TextInput {...props} ref={component => this._textInput = component}/>
+    );
+
+
+    onRefresh = () => {
+        this.setState({refreshing: true});
+        fifaGraphQLService.getAllFutPlayers().then((json) => {
+
+            transferTargetService.getTransferTargets()
+                .then(userTransferTargets => {
+                    //console.log(userTransferTargets);
+                    userTransferTargets.forEach(u => this.saveTransferTargetPlayerPrices(u));
+                    this.setState({
+                        transferTargetPlayers: userTransferTargets,
+                        loading: false,
+                        refreshing: false
+                    });
+                });
+        });
+
+    };
 
     render() {
         const {searchPlayerQuery} = this.state;
@@ -181,49 +231,81 @@ class TransferTargetsComponent extends Component {
                     height: null,
                 }}
             >
+                <ActivityIndicator size="large" color="#0000ff" animating={this.state.loading}/>
                 <View style={styles.MainContainer}>
-                    <Picker style={styles.consolePicker}
-                            selectedValue={this.state.console}
-                            onValueChange={(itemValue, itemIndex) =>
-                                this.setState({console: itemValue})
-                            }>
-                        <Picker.Item label="PS" value="ps" color="blue"/>
-                        <Picker.Item label="Xbox" value="xbox" color="green"/>
-                        <Picker.Item label="PC" value="pc" color="orange"/>
-                    </Picker>
+                    <View>
+                        <Picker style={styles.consolePicker}
+                                selectedValue={this.state.console}
+                                onValueChange={(itemValue, itemIndex) =>
+                                    this.setState({console: itemValue})
+                                }>
+                            <Picker.Item label="PS4" value="PS4" color="blue"/>
+                            <Picker.Item label="Xbox" value="XBOX" color="green"/>
+                            <Picker.Item label="PC" value="PC" color="orange"/>
+                        </Picker>
 
-                    <Autocomplete
-                        autoCapitalize="none"
-                        refreshing={true}
-                        removeClippedSubviews={true}
-                        autoCorrect={false}
-                        containerStyle={styles.autocompleteContainer}
-                        data={futPlayers.length === 1 && comp(searchPlayerQuery, futPlayers[0].name) ? [] : futPlayers}
-                        defaultValue={searchPlayerQuery}
-                        onChangeText={text => this.setState({searchPlayerQuery: text})}
-                        placeholder="Enter player name"
-                        renderItem={({item}) => (
-                            <SearchResultPlayerComponent name={item.name}
-                                                         rating={item.rating}
-                                                         version={item.version}
-                                                         imagePath={item.imagePath}
-                                                         addPlayerMethod={this.addFifaPlayer}
-                            />
-                        )}
-                        keyExtractor={item => item._id}
-                    />
+                        <Autocomplete
+                            renderTextInput={this.renderInput}
+                            clearButtonMode={'always'}
+                            listContainerStyle={{height: futPlayers.length * 70}}
+                            autoCapitalize="none"
+                            ref={input => {
+                                this.textInput = input
+                            }}
+                            refreshing={true}
+                            removeClippedSubviews={true}
+                            autoCorrect={false}
+                            containerStyle={styles.autocompleteContainer}
+                            data={futPlayers.length === 1 && comp(searchPlayerQuery, futPlayers[0].name) ? [] : futPlayers}
+                            defaultValue={searchPlayerQuery}
+                            onChangeText={text => this.setState({searchPlayerQuery: text})}
+                            placeholder="Enter player name"
+                            renderItem={({item}) => (
+                                <ScrollView contentContainerStyle={styles.scrollViewSearchBar}>
+                                    <SearchResultPlayerComponent name={item.name}
+                                                                 rating={item.rating}
+                                                                 version={item.version}
+                                                                 imageUrl={item.imageUrl}
+                                                                 addPlayerMethod={this.addFifaPlayer}
+                                    />
+                                </ScrollView>
+                            )}
+                            keyExtractor={item => item._id}
+                        />
+
+                        <View style={{
+                            zIndex: 2,
+                            alignSelf: 'flex-end',
+                            alignItems: 'center',
+                            marginTop: 14,
+                            marginRight: 10
+                        }}>
+                            <TouchableOpacity onPress={() => {
+                                this.setState({searchPlayerQuery: ''});
+                                this._textInput.setNativeProps({text: ''});
+                            }}>
+                                <Icon
+                                    name='circle-with-cross'
+                                    type='entypo'
+                                    size={30}
+                                    color='white'
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
 
                     {/*List of displayed players*/}
-                    {/*<ScrollView contentContainerStyle={styles.scrollViewContainer}>*/}
-                    <SafeAreaView style={styles.scrollViewContainer}>
+                    <View style={styles.swipeableTransferList}>
                         <SwipeableFlatList
+                            // contentContainerStyle={styles.swipeableTransferList}
                             ref={(ref) => {
                                 this.swipeableList = ref
                             }}
                             keyExtractor={item => item._id}
                             width='100%'
                             bounceFirstRowOnMount={false}
-                            refreshing={true}
+                            onRefresh={this.onRefresh}
+                            refreshing={this.state.refreshing}
                             removeClippedSubviews={true}
                             data={this.state.transferTargetPlayers}
                             extraData={this.state}
@@ -234,7 +316,9 @@ class TransferTargetsComponent extends Component {
                             }
                             renderItem={({item}) => this.renderListItem(item)}
                         />
-                    </SafeAreaView>
+                    </View>
+                    <Text style={{color: 'white', margin: 2, padding: 5}}>Transfer Targets
+                        size: {this.state.transferTargetPlayers.length} / {ApiConstants.TRANSFER_TARGET_LIST_MAX_SIZE}</Text>
                 </View>
             </ImageBackground>
 
@@ -258,7 +342,7 @@ class TransferTargetsComponent extends Component {
     showAlert = (index, item) => {
         this.swipeableList._onClose();
         Alert.alert(
-            'Delete User',
+            'Delete Transfer Target',
             `Are you sure you want to delete ${item.name}?`,
             [
                 {
@@ -274,6 +358,9 @@ class TransferTargetsComponent extends Component {
                             let transferTargetPlayers = this.state.transferTargetPlayers;
                             transferTargetPlayers.splice(index, 1);
                             this.setState({transferTargetPlayers: transferTargetPlayers})
+
+                            // also remove from DB
+                            transferTargetService.deleteTransferTarget(item._id);
 
                         } else {
                             this.swipeableList._onClose()
@@ -294,7 +381,7 @@ class TransferTargetsComponent extends Component {
                         this.showAlert(index, item);
                     }} style={styles.quickActionButtonStyle}>
                     <Icon
-                        name={'delete'}
+                        name={'trash'}
                         color={'white'}
                         size={25}/>
                     <Text
@@ -314,11 +401,11 @@ class TransferTargetsComponent extends Component {
                     name: item.name,
                     rating: item.rating,
                     version: item.version,
-                    imagePath: item.imagePath,
+                    imageUrl: item.imageUrl,
                     position: item.position
                 })}>
                     <Image style={styles.profileImage}
-                           source={{uri: item.imagePath}}/>
+                           source={{uri: item.imageUrl}}/>
                 </TouchableOpacity>
 
                 <View style={styles.primaryTextStyle}>
@@ -347,13 +434,33 @@ class TransferTargetsComponent extends Component {
             </View>
         )
     };
+    fullListAlert = (index, item) => {
+        Alert.alert(
+            'Transfer Target List is full',
+            `You can clear up space by sliding left on a player and press the delete button.`,
+            [
+                {
+                    text: 'Ok',
+                    onPress: () => {
+                    }
+                }]
+        )
+    };
+
+    showPopover() {
+        this.setState({isPopOverVisible: true});
+    }
+
+    closePopover() {
+        this.setState({isPopOverVisible: false});
+    }
 
     // renderListItemOld = (item) => {
     //     return (
     //         <ListItem
     //             title={`${item.name}`}
     //             subtitle={item.rating.toString()}
-    //             leftAvatar={{source: {uri: item.imagePath}}}
+    //             leftAvatar={{source: {uri: item.imageUrl}}}
     //             rightElement={this.renderPriceItem(item)}
     //         >
     //         </ListItem>

@@ -2,22 +2,16 @@ import { request, GraphQLClient } from 'graphql-request'
 import { ApolloProvider, Query } from "react-apollo";
 import ApolloClient from "apollo-boost";
 import gql from "graphql-tag";
+import ApiConstants from "../../constants/ApiConstants";
 
-// machine local ip adress
-//let uri = 'http://192.168.1.250:4000/graphql';
-
-//wifi
-let uri = 'http://192.168.1.40:4000/graphql';
-
-//hotspot
-//let uri = 'http://192.168.43.116:4000/graphql';
+let uri = ApiConstants.API_GRAPH_QL_SERVER_BASE_PATH;
 
 const getPlayerByNameAndVersionQuery = gql`
 query getPlayer($name: String!, $version: String!, $rating: Int!) {
   getPlayer(name: $name, version: $version, rating: $rating) {
     name,
     rating,
-    imagePath,
+    imageUrl,
     _id,
     version,
     club,
@@ -30,7 +24,7 @@ query getPlayers{
   getPlayers {
     name,
     rating,
-    imagePath,
+    imageUrl,
     _id,
     version,
     club

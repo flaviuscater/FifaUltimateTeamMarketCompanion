@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Frontend",
-    "slug": "frontend",
+    "name": "FutMarketCompanion",
+    "slug": "fut-market-companion",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
@@ -25,6 +25,11 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.flaviusc.futmarket",
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

@@ -10,8 +10,8 @@ export default class SearchResultPlayerComponent extends Component {
             <View style={styles.container}>
                 <Text>{this.props.name}</Text>
                 <View style={styles.lowerPart}>
-                    <Text>{this.props.rating} {this.props.version} </Text>
-                    <Image style={{width: 50, height: 50}} source={{uri: this.props.imagePath}}/>
+                    <Text>{this.props.rating}</Text>
+                    <Image style={{width: 50, height: 50}} source={{uri: this.props.imageUrl}}/>
                     <TouchableOpacity style={styles.button} onPress={() => {
                         this.props.addPlayerMethod(this.props.name, this.props.version, this.props.rating)
                     }}>
@@ -28,5 +28,5 @@ SearchResultPlayerComponent.propTypes = {
     rating: PropTypes.number,
     version: PropTypes.string,
     addPlayerMethod: PropTypes.func,
-    imagePath: PropTypes.string
+    imageUrl: PropTypes.string
 };

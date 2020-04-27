@@ -1,0 +1,1 @@
+export const UPDATE_CONSOLE = 'UPDATE_CONSOLE';

@@ -1,23 +1,33 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 import {FontSize, relativeHeight, relativeWidth} from "../../app/utils";
 
 const styles = StyleSheet.create({
 
     MainContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20
+        // position: 'absolute',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // marginTop: 20,
         // flex: 1,
         // margin: 2
     },
 
-    scrollViewContainer: {
+    scrollViewSearchBar: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 5,
         margin: 2,
         borderWidth: 1,
+    },
+    swipeableTransferList: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 5,
+        margin: 2,
+        borderWidth: 1,
+        height: 10 * 45
     },
 
     consolePicker: {
@@ -32,8 +42,10 @@ const styles = StyleSheet.create({
     },
 
     autocompleteContainer: {
-        //flex: 1,
+        // flex: 1,
         left: 5,
+        margin: 2,
+        padding: 5,
         position: 'absolute',
         right: '30%',
         top: 5,
@@ -96,6 +108,16 @@ const styles = StyleSheet.create({
     pricesTextStyle: {
         flex: 2,
         justifyContent: 'flex-end'
+    },
+    popOverButton: {
+        borderRadius: 4,
+        padding: 10,
+        marginLeft: 10,
+        marginRight: 10,
+        backgroundColor: '#ccc',
+        borderColor: '#333',
+        borderWidth: 1,
+
     }
 
 });

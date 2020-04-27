@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-require('./app/graphQL/config');
-const Player = require('./app/models/Player');
+require('./app/repository/repository');
+const Player = require('./app/models/persistence/Player');
 
 const url = 'https://www.futbin.com/20/players';
 
@@ -19,8 +19,8 @@ function fetchAllFutPlayers() {
                     let player = new Player();
 
                     player.name = $(this).find('.player_name_players_table').text().replace(/\s*$/,"");
-                    player.imagePath = $(this).find('.player_img').attr('data-original').replace(/\s*$/, "");
-                    player._id = player.imagePath.substring(player.imagePath.lastIndexOf('/') + 1, (player.imagePath.lastIndexOf('.')));
+                    player.imageUrl = $(this).find('.player_img').attr('data-original').replace(/\s*$/, "");
+                    player._id = player.imageUrl.substring(player.imageUrl.lastIndexOf('/') + 1, (player.imageUrl.lastIndexOf('.')));
 
                     //Remove 'p' character in some of the futbinIds (todo: make a more general solution if it's the case)
                     if (player._id.indexOf('p') > -1) {
@@ -57,6 +57,7 @@ function fetchAllFutPlayers() {
             })
             .catch(console.error);
     }
+    console.log("Finished Scraping all the players")
 
     /*    Player.insertMany(fifaPlayers, {ordered: false})
             .catch(error => console.log(error))*/
