@@ -21,7 +21,8 @@ const DailyFlipPlayerSchema = new mongoose.Schema({
         position: String,
         version: String,
         //Ps4, Xbox or Pc
-        consoles: [String]
+        consoles: [String],
+        createdAt: { type: Date, expires: 7200, default: Date.now }
     }, {
         timestamps: true
     }
