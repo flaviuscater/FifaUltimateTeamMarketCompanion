@@ -56,10 +56,12 @@ const DailyFlipPlayerService = {
     },
 
     findDailyFlipTargets() {
+        console.log('Starting to find daily flip players');
         setInterval(async function () {
             //delete all once per day
             //await DailyFlipPlayer.deleteMany({});
-            Player.find({version: {$nin : ["Normal"]}})
+            // Player.find({version: {$nin : ["Normal"]}})
+            Player.find({version: {$nin: ["Icon"]}, rating: {$gt: 82}})
                 .cursor().eachAsync(async futPlayer => {
                     //console.log(futPlayer);
                     return playerPriceService.constructDailyPlayerPrice(futPlayer._id)
@@ -155,7 +157,7 @@ function checkIfTransferProfitIsHighEnough(cardPrice, profit) {
         return profit > 5000;
     } else if (cardPrice > 50000 && cardPrice < 100000) {
         return profit > 10000;
-    } else if (cardPrice > 100000 && cardPrice < 150000) {
+    } else if (cardPrice > 100000 && cardPrice < 200000) {
         return profit > 15000;
     } else if (cardPrice > 150000 && cardPrice < 400000) {
         return profit > 20000;

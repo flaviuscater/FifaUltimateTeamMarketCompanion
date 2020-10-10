@@ -7,7 +7,6 @@ const app = express();
 const bodyparser = require("body-parser");
 
 require('../repository/repository');
-require('../graphQL/index');
 
 //Middleware
 app.use(bodyparser.json());
@@ -50,3 +49,5 @@ app.listen(4001, () => {
 
     console.log("REST Server running on port 4001");
 });
+
+module.exports = app;

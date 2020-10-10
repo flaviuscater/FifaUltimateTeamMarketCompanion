@@ -22,11 +22,13 @@ const DailyFlipPlayerSchema = new mongoose.Schema({
         version: String,
         //Ps4, Xbox or Pc
         consoles: [String],
-        createdAt: { type: Date, expires: 7200, default: Date.now }
+        expireAt: { type: Date, default:  Date.now }
     }, {
         timestamps: true
     }
 );
+
+DailyFlipPlayerSchema.index({"expireAt": 1}, {expireAfterSeconds: 7200});//2 hours
 
 module.exports = mongoose.model('DailyFlipPlayer', DailyFlipPlayerSchema);
 

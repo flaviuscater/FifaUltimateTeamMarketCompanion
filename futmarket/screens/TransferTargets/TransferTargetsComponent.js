@@ -34,7 +34,7 @@ class TransferTargetsComponent extends Component {
             seed: 1,
             error: null,
             refreshing: false,
-            console: "ps",
+            console: "PS4",
             futPlayers: [],
             searchPlayerQuery: '',
             querySelectedPlayer: {name: "", rating: 0, version: ""},
@@ -234,15 +234,25 @@ class TransferTargetsComponent extends Component {
                 <ActivityIndicator size="large" color="#0000ff" animating={this.state.loading}/>
                 <View style={styles.MainContainer}>
                     <View>
-                        <Picker style={styles.consolePicker}
-                                selectedValue={this.state.console}
-                                onValueChange={(itemValue, itemIndex) =>
-                                    this.setState({console: itemValue})
-                                }>
-                            <Picker.Item label="PS4" value="PS4" color="blue"/>
-                            <Picker.Item label="Xbox" value="XBOX" color="green"/>
-                            <Picker.Item label="PC" value="PC" color="orange"/>
-                        </Picker>
+                        <View style={{
+                            zIndex: 2,
+                            alignSelf: 'flex-end',
+                            alignItems: 'center',
+                            marginTop: 14,
+                            marginRight: 10
+                        }}>
+                            <TouchableOpacity onPress={() => {
+                                this.setState({searchPlayerQuery: ''});
+                                this._textInput.setNativeProps({text: ''});
+                            }}>
+                                <Icon
+                                    name='circle-with-cross'
+                                    type='entypo'
+                                    size={30}
+                                    color='white'
+                                />
+                            </TouchableOpacity>
+                        </View>
 
                         <Autocomplete
                             renderTextInput={this.renderInput}
@@ -273,25 +283,15 @@ class TransferTargetsComponent extends Component {
                             keyExtractor={item => item._id}
                         />
 
-                        <View style={{
-                            zIndex: 2,
-                            alignSelf: 'flex-end',
-                            alignItems: 'center',
-                            marginTop: 14,
-                            marginRight: 10
-                        }}>
-                            <TouchableOpacity onPress={() => {
-                                this.setState({searchPlayerQuery: ''});
-                                this._textInput.setNativeProps({text: ''});
-                            }}>
-                                <Icon
-                                    name='circle-with-cross'
-                                    type='entypo'
-                                    size={30}
-                                    color='white'
-                                />
-                            </TouchableOpacity>
-                        </View>
+                        <Picker style={styles.consolePicker}
+                                selectedValue={this.state.console}
+                                onValueChange={(itemValue, itemIndex) =>
+                                    this.setState({console: itemValue})
+                                }>
+                            <Picker.Item label="PS4" value="PS4" color="blue"/>
+                            <Picker.Item label="Xbox" value="XBOX" color="green"/>
+                            <Picker.Item label="PC" value="PC" color="orange"/>
+                        </Picker>
                     </View>
 
                     {/*List of displayed players*/}

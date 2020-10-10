@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 require('./app/repository/repository');
 const Player = require('./app/models/persistence/Player');
 
-const url = 'https://www.futbin.com/20/players';
+const url = 'https://www.futbin.com/21/players';
 
 function fetchAllFutPlayers() {
     let fifaPlayers = [];
@@ -31,7 +31,7 @@ function fetchAllFutPlayers() {
                     player.nationality = clubNationsLeague.first().next().attr('data-original-title').replace(/\s*$/, "");
                     player.league = clubNationsLeague.first().next().next().attr('data-original-title').replace(/\s*$/, "");
 
-                    player.rating = $(this).find('.form.rating.ut20').text();
+                    player.rating = $(this).find('.form.rating.ut21').text();
                     player.position = $(this).find('td').first().next().next().text().replace(/\s*$/, "");
                     player.version = $(this).find('.mobile-hide-table-col').text();
                     // skip CL players due to having the same id as gold cards

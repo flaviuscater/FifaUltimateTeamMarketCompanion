@@ -2,11 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="779e888e-c359-418c-afb2-e1f0ad6fe89a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/app/models/Player.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/futbin-scrapper.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/pl-scrapper.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/test/controller.spec.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/REST-Controller/controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/REST-Controller/controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/models/persistence/DailyFlipPlayer.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/models/persistence/DailyFlipPlayer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/service/DailyFlipPlayerService.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/service/DailyFlipPlayerService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/backend/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/futmarket/screens/TransferTargets/TransferTargetsComponent.js" beforeDir="false" afterPath="$PROJECT_DIR$/futmarket/screens/TransferTargets/TransferTargetsComponent.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -61,6 +65,15 @@
       <option name="presentableId" value="Default" />
       <updated>1570645481481</updated>
       <workItem from="1570645483026" duration="246000" />
+      <workItem from="1588504177296" duration="1829000" />
+      <workItem from="1589276335876" duration="599000" />
+      <workItem from="1589708337063" duration="154000" />
+      <workItem from="1589709795773" duration="84000" />
+      <workItem from="1590079164481" duration="638000" />
+      <workItem from="1590128606981" duration="1198000" />
+      <workItem from="1590215174926" duration="1207000" />
+      <workItem from="1590316618227" duration="588000" />
+      <workItem from="1592139197931" duration="30000" />
     </task>
     <servers />
   </component>
@@ -72,7 +85,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
