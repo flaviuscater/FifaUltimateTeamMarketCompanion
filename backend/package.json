@@ -21,7 +21,7 @@
     "expo-server-sdk": "^3.4.0",
     "express": "^4.17.1",
     "graphql": "^14.5.8",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "method-override": "^3.0.0",
     "mongoose": "^5.9.15",
     "node-fetch": "^2.6.0",
