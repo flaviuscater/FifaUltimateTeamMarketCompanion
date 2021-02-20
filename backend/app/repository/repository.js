@@ -5,7 +5,7 @@ const dailyFlipPlayerService = require("../service/DailyFlipPlayerService.js");
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
-const url = 'mongodb://localhost:27017/graphqldb';
+const url = 'mongodb+srv://admin:admin1234@futmarketcluster.0p5up.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 
 mongoose.connect(url);
 mongoose.connection.once('open', () =>{

@@ -58,10 +58,9 @@ const DailyFlipPlayerService = {
     findDailyFlipTargets() {
         console.log('Starting to find daily flip players');
         setInterval(async function () {
-            //delete all once per day
-            //await DailyFlipPlayer.deleteMany({});
+        // setImmediate(async function () {
             // Player.find({version: {$nin : ["Normal"]}})
-            Player.find({version: {$nin: ["Icon"]}, rating: {$gt: 82}})
+            Player.find({version: {$nin: ["Icon"]}, rating: {$gt: 84}, currentPrice: {$gt: 40000}})
                 .cursor().eachAsync(async futPlayer => {
                     //console.log(futPlayer);
                     return playerPriceService.constructDailyPlayerPrice(futPlayer._id)
@@ -70,8 +69,8 @@ const DailyFlipPlayerService = {
                             potentialDailyFlipPlayer.price = playerPrice;
 
                             findPs4DailyFlipPlayers(potentialDailyFlipPlayer);
-                            findXBOXDailyFlipPlayers(potentialDailyFlipPlayer);
-                            findPCDailyFlipPlayers(potentialDailyFlipPlayer);
+//                            findXBOXDailyFlipPlayers(potentialDailyFlipPlayer);
+//                            findPCDailyFlipPlayers(potentialDailyFlipPlayer);
                             // sleep 2 seconds
                             await new Promise(r => setTimeout(r, 5000));
                         })
@@ -106,6 +105,14 @@ function findPs4DailyFlipPlayers(potentialDailyFlipPlayer) {
     if (flipFound) {
         saveDailyFlipPlayer(potentialDailyFlipPlayer, "PS4", potentialTransferProfit, currentPrice, dailyHighestPrice);
     }
+    Player.findOneAndUpdate({
+        _id: potentialDailyFlipPlayer._id
+    }, {"currentPrice": currentPrice}, {returnOriginal: false, upsert: true}, function (err, doc) {
+        if (err || doc == null) {
+            console.log(err);
+        }
+        return doc;
+    });
 }
 
 function findXBOXDailyFlipPlayers(potentialDailyFlipPlayer) {
@@ -154,13 +161,13 @@ function saveDailyFlipPlayer(dailyFlipPlayer, foundConsole, potentialTransferPro
 
 function checkIfTransferProfitIsHighEnough(cardPrice, profit) {
     if (cardPrice > 10000 && cardPrice < 50000) {
-        return profit > 5000;
+        return profit > 2000;
     } else if (cardPrice > 50000 && cardPrice < 100000) {
-        return profit > 10000;
+        return profit > 5000;
     } else if (cardPrice > 100000 && cardPrice < 200000) {
-        return profit > 15000;
+        return profit > 10000;
     } else if (cardPrice > 150000 && cardPrice < 400000) {
-        return profit > 20000;
+        return profit > 15000;
     }
     return false
 }

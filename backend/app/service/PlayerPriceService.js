@@ -3,6 +3,7 @@ const fetch = require("node-fetch");
 const PlayerPriceService = {
     getPlayerPrice: function (futbinId) {
         // let result;
+        console.log('https://www.futbin.com/21/playerPrices?player=' + futbinId);
         return fetch('https://www.futbin.com/21/playerPrices?player=' + futbinId)
         // const response = await fetch('https://www.futbin.com/20/playerPrices?player=' + futbinId)
         //return await response.json();
@@ -17,6 +18,7 @@ const PlayerPriceService = {
     },
 
     getHourlyTodayPlayerPrice: function (futbinId) {
+        console.log('https://www.futbin.com/21/playerGraph?type=today&year=21&player=' + futbinId);
         return fetch('https://www.futbin.com/21/playerGraph?type=today&year=21&player=' + futbinId)
             .then(response => response.json());
     },

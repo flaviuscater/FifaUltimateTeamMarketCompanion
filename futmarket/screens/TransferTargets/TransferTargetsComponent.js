@@ -61,12 +61,12 @@ class TransferTargetsComponent extends Component {
                 });
             });
 
-        registerForPushNotificationsAsync()
-            .then(response => console.log(JSON.stringify(response)))
-            // .then(response => console.log(response))
-            .catch(function (error) {
-                console.log('Fail to save push token: ' + error.message);
-            });
+        // registerForPushNotificationsAsync()
+        //     .then(response => console.log(JSON.stringify(response)))
+        //     // .then(response => console.log(response))
+        //     .catch(function (error) {
+        //         console.log('Fail to save push token: ' + error.message);
+        //     });
         //this.updatePlayerPrices();
     }
 

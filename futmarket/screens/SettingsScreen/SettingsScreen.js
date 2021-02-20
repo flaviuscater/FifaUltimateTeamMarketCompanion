@@ -55,7 +55,7 @@ class SettingsScreen extends Component {
                             { label: "PC", value: "PC" }
                         ]}
                         onValueChange={value => {
-                            console.log("console:", value);
+                            console.log("console: %s ,userId: %s", value, Constants.deviceId);
                             updateConsole(value);
                             UserService.updateUser({userId: Constants.deviceId, console: value, allowPushNotifications: this.state.allowPushNotifications})
                         }}
